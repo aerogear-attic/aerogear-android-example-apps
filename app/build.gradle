@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: 'com.apollographql.android'
 
 android {
     compileSdkVersion 27
@@ -25,6 +26,7 @@ android {
 ext {
     android_support_version = "27.1.1"
     aerogear_version = "1.0.0-alpha.2"
+    apollo_version = "0.5.0"
 }
 
 dependencies {
@@ -32,6 +34,8 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:1.1.2"
 
     implementation "org.aerogear:android-core:$aerogear_version"
+    implementation "com.apollographql.apollo:apollo-runtime:$apollo_version"
+    implementation "com.apollographql.apollo:apollo-android-support:$apollo_version"
 
     testImplementation "junit:junit:4.12"
     androidTestImplementation "com.android.support.test:runner:1.0.2"
