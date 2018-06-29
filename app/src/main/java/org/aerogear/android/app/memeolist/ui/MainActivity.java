@@ -4,6 +4,7 @@ import android.databinding.BindingAdapter;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.memes)
     RecyclerView mMemes;
 
+    @BindView(R.id.swipe)
+    SwipeRefreshLayout mSwipe;
+
     private ObservableList<ListMemesQuery.AllMeme> memes = new ObservableArrayList<>();
     private ApolloClient apolloClient;
 
@@ -52,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
         new LastAdapter(memes, BR.meme)
                 .map(ListMemesQuery.AllMeme.class, R.layout.item_meme)
                 .into(mMemes);
+
+        mSwipe.setOnRefreshListener(() -> retrieveMemes());
     }
 
     @Override
@@ -68,13 +74,18 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(@Nonnull Response<ListMemesQuery.Data> response) {
                         new AppExecutors().mainThread().submit(() -> {
+                            memes.clear();
                             memes.addAll(response.data().allMemes());
+
+                            mSwipe.setRefreshing(false);
                         });
                     }
 
                     @Override
                     public void onFailure(@Nonnull ApolloException e) {
                         MobileCore.getLogger().error(e.getMessage(), e);
+
+                        mSwipe.setRefreshing(false);
                     }
                 });
     }
