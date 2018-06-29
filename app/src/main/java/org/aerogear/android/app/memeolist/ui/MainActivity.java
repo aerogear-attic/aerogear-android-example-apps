@@ -1,7 +1,9 @@
-package org.aerogear.android.app.memeolist;
+package org.aerogear.android.app.memeolist.ui;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import org.aerogear.android.app.memeolist.R;
 
 public class MainActivity extends AppCompatActivity {
 
