@@ -15,6 +15,7 @@ import com.apollographql.apollo.ApolloClient;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.github.nitrico.lastadapter.LastAdapter;
 
 import org.aerogear.android.app.memeolist.BR;
@@ -88,6 +89,13 @@ public class MainActivity extends AppCompatActivity {
                         mSwipe.setRefreshing(false);
                     }
                 });
+    }
+
+    public static void displayAvatar(ImageView imageView) {
+        Glide.with(imageView)
+                .load(R.mipmap.ic_launcher)
+                .apply(RequestOptions.circleCropTransform())
+                .into(imageView);
     }
 
     @BindingAdapter("memeImage")

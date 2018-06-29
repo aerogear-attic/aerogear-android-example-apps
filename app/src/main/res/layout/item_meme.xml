@@ -11,11 +11,11 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:layout_height="wrap_content">
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp">
 
         <android.support.v7.widget.CardView
             style="@style/AppTheme.Card"
@@ -30,11 +30,102 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
-                    android:layout_width="match_parent"
+                    android:id="@+id/avatar"
+                    android:layout_width="@dimen/meme_avatar_width"
+                    android:layout_height="@dimen/meme_avatar_width"
+                    android:layout_marginStart="@dimen/meme_avatar_margin_start"
+                    android:src="@mipmap/ic_launcher"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/user"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/meme_user_margin_start"
+                    android:text="@string/app_name"
+                    android:textColor="@color/colorAccent"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/avatar"
+                    app:layout_constraintStart_toEndOf="@id/avatar"
+                    app:layout_constraintTop_toTopOf="@id/avatar" />
+
+                <ImageView
+                    android:id="@+id/createdAtIcon"
+                    android:layout_width="@dimen/meme_created_at_icon_width"
+                    android:layout_height="@dimen/meme_created_at_icon_width"
+                    android:layout_marginEnd="@dimen/meme_created_at_icon_margin_end"
+                    android:src="@drawable/ic_access_time"
+                    android:tint="@color/gray"
+                    app:layout_constraintBottom_toBottomOf="@id/createdAt"
+                    app:layout_constraintEnd_toStartOf="@id/createdAt"
+                    app:layout_constraintTop_toTopOf="@id/createdAt" />
+
+                <TextView
+                    android:id="@+id/createdAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/meme_avatar_margin_start"
+                    android:text="14h"
+                    android:textColor="@color/gray"
+                    app:layout_constraintBottom_toBottomOf="@id/avatar"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/avatar" />
+
+                <ImageView
+                    android:id="@+id/meme"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/meme_image_margin_top"
                     android:adjustViewBounds="true"
                     android:src="@mipmap/ic_launcher"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/avatar"
                     app:memeImage="@{meme}" />
+
+                <ImageView
+                    android:id="@+id/likesIcon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="@dimen/meme_avatar_margin_start"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ic_favorite"
+                    android:tint="@color/colorAccent"
+                    app:layout_constraintTop_toBottomOf="@id/meme" />
+
+                <TextView
+                    android:id="@+id/likes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:text="182,465 likes"
+                    android:textColor="@color/colorAccent"
+                    app:layout_constraintBottom_toBottomOf="@id/likesIcon"
+                    app:layout_constraintStart_toEndOf="@id/likesIcon"
+                    app:layout_constraintTop_toTopOf="@id/likesIcon" />
+
+                <ImageView
+                    android:id="@+id/like"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_favorite_border"
+                    android:tint="@color/gray"
+                    app:layout_constraintBottom_toBottomOf="@id/comments"
+                    app:layout_constraintEnd_toStartOf="@id/comments"
+                    app:layout_constraintTop_toTopOf="@id/comments" />
+
+                <ImageView
+                    android:id="@+id/comments"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/ic_chat_bubble_outline"
+                    android:tint="@color/gray"
+                    app:layout_constraintBottom_toBottomOf="@id/likesIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/likesIcon" />
 
             </android.support.constraint.ConstraintLayout>
 

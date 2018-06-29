@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Card View -->
     <dimen name="cardview_elevation">5dp</dimen>
     <dimen name="cardview_corner_radius">0dp</dimen>
     <dimen name="cardview_content_padding">10dp</dimen>
+    
+    <!-- Memes -->
+    <dimen name="meme_avatar_width">40dp</dimen>
+    <dimen name="meme_avatar_margin_start">10dp</dimen>
+    <dimen name="meme_user_margin_start">10dp</dimen>
+    <dimen name="meme_created_at_icon_width">15dp</dimen>
+    <dimen name="meme_created_at_icon_margin_end">2dp</dimen>
+    <dimen name="meme_image_margin_top">10dp</dimen>
 </resources>
