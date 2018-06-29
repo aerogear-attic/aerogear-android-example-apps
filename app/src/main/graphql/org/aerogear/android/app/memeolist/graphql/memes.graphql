@@ -1,0 +1,6 @@
+query listMemes {
+  allMemes {
+    id
+    photoUrl
+  }
+}
