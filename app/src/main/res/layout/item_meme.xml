@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -8,9 +9,10 @@
             type="org.aerogear.android.app.memeolist.graphql.ListMemesQuery.AllMeme" />
     </data>
 
-    <TextView
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@{meme.id}" />
+        android:adjustViewBounds="true"
+        app:memeImage="@{meme}" />
 
 </layout>

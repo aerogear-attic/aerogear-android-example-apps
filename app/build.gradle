@@ -31,6 +31,8 @@ ext {
     aerogear_version = "1.0.0-alpha.2"
     apollo_version = "0.5.0"
     butterknife_version = "8.8.1"
+    lastadapter_version = "2.3.0"
+    glide_version = "4.7.1"
 }
 
 dependencies {
@@ -46,7 +48,10 @@ dependencies {
     implementation "com.jakewharton:butterknife:$butterknife_version"
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterknife_version"
 
-    implementation "com.github.nitrico.lastadapter:lastadapter:2.3.0"
+    implementation "com.github.nitrico.lastadapter:lastadapter:$lastadapter_version"
+
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
 
     testImplementation "junit:junit:4.12"
     androidTestImplementation "com.android.support.test:runner:1.0.2"

@@ -1,16 +1,19 @@
 package org.aerogear.android.app.memeolist.ui;
 
+import android.databinding.BindingAdapter;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.ImageView;
 
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.ApolloClient;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
+import com.bumptech.glide.Glide;
 import com.github.nitrico.lastadapter.LastAdapter;
 
 import org.aerogear.android.app.memeolist.BR;
@@ -74,5 +77,10 @@ public class MainActivity extends AppCompatActivity {
                         MobileCore.getLogger().error(e.getMessage(), e);
                     }
                 });
+    }
+
+    @BindingAdapter("memeImage")
+    public static void displayMeme(ImageView imageView, ListMemesQuery.AllMeme meme) {
+        Glide.with(imageView).load(meme.photoUrl()).into(imageView);
     }
 }
