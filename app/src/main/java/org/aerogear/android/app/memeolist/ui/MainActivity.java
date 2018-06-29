@@ -94,4 +94,5 @@ public class MainActivity extends AppCompatActivity {
     public static void displayMeme(ImageView imageView, ListMemesQuery.AllMeme meme) {
         Glide.with(imageView).load(meme.photoUrl()).into(imageView);
     }
+
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="cardview_elevation">5dp</dimen>
+    <dimen name="cardview_corner_radius">0dp</dimen>
+    <dimen name="cardview_content_padding">10dp</dimen>
+</resources>
