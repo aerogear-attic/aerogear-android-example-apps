@@ -75,10 +75,11 @@
                 <ImageView
                     android:id="@+id/meme"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginTop="@dimen/meme_image_margin_top"
-                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
                     android:src="@mipmap/ic_launcher"
+                    app:layout_constraintDimensionRatio="H,1:1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/avatar"
