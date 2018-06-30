@@ -21,12 +21,9 @@ import com.github.nitrico.lastadapter.LastAdapter;
 import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.graphql.ListMemesQuery;
-import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.sync.SyncService;
-
-import java.util.List;
 
 import javax.annotation.Nonnull;
 
