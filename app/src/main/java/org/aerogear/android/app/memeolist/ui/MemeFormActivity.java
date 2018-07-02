@@ -12,18 +12,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.ApolloClient;
+import com.apollographql.apollo.ApolloMutationCall;
+import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.aerogear.android.app.memeolist.R;
+import org.aerogear.android.app.memeolist.graphql.NewMemeMutation;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Requester;
 import org.aerogear.mobile.core.reactive.Responder;
+import org.aerogear.mobile.sync.SyncService;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,6 +59,8 @@ public class MemeFormActivity extends AppCompatActivity {
 
     @BindView(R.id.bottomTextPreview)
     TextView mBottomTextPreview;
+
+    private MaterialDialog materialDialog;
 
     private File file;
 
@@ -91,6 +102,13 @@ public class MemeFormActivity extends AppCompatActivity {
                 mBottomTextPreview.setText(editable.toString());
             }
         });
+
+        materialDialog = new MaterialDialog.Builder(this)
+                .title(R.string.creating_meme)
+                .content(R.string.please_wait)
+                .progress(true, 0)
+                .cancelable(false)
+                .build();
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -131,20 +149,14 @@ public class MemeFormActivity extends AppCompatActivity {
     void send() {
         if (isValid()) {
 
-            MaterialDialog materialDialog = new MaterialDialog.Builder(this)
-                    .title(R.string.creating_meme)
-                    .content(R.string.please_wait)
-                    .progress(true, 0)
-                    .cancelable(false)
-                    .show();
+            materialDialog.show();
 
             uploadImage()
                     .respondOn(new AppExecutors().mainThread())
                     .respondWith(new Responder<String>() {
                         @Override
                         public void onResult(String imageUrl) {
-                            materialDialog.dismiss();
-                            finish();
+                            saveMeme(imageUrl);
                         }
 
                         @Override
@@ -156,6 +168,35 @@ public class MemeFormActivity extends AppCompatActivity {
                     });
 
         }
+    }
+
+    private void saveMeme(String imageUrl) {
+
+        ApolloClient apolloClient = SyncService.getInstance().getApolloClient();
+
+        NewMemeMutation mutation = NewMemeMutation.builder()
+                .url(createMemeUrl(imageUrl))
+                .build();
+
+        ApolloMutationCall<NewMemeMutation.Data> mutate = apolloClient.mutate(mutation);
+        mutate.enqueue(new ApolloCall.Callback<NewMemeMutation.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<NewMemeMutation.Data> response) {
+                new AppExecutors().mainThread().submit(() -> {
+                    materialDialog.dismiss();
+                    displayMessage(R.string.meme_created);
+                    finish();
+                });
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                materialDialog.dismiss();
+                MobileCore.getLogger().error(e.getMessage(), e);
+                displayMessage(e.getMessage());
+            }
+        });
+
     }
 
     private org.aerogear.mobile.core.reactive.Request<String> uploadImage() {
@@ -202,7 +243,18 @@ public class MemeFormActivity extends AppCompatActivity {
     }
 
     private void displayMessage(@StringRes int resId) {
-        Toast.makeText(getApplicationContext(), resId, Toast.LENGTH_SHORT).show();
+        displayMessage(getString(resId));
+    }
+
+    private void displayMessage(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    private String createMemeUrl(String imageUrl) {
+        return "https://memegen.link/custom/"
+                + mTopText.getText().toString() + "/" + mBottomText.getText().toString() + ".jpg" +
+                "?alt=" + imageUrl +
+                "&font=opensans-extrabold";
     }
 
 }

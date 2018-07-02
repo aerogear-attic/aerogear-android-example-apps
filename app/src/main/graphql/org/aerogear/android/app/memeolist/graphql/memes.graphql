@@ -4,3 +4,9 @@ query listMemes {
     photoUrl
   }
 }
+
+mutation newMeme($url: String!) {
+  createMeme(photoUrl: $url) {
+      photoUrl
+  }
+}
