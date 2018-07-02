@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/meme_preview_margin">
+
+    <ImageView
+        android:id="@+id/meme"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="@dimen/meme_preview_image_padding"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_launcher"
+        app:layout_constraintBottom_toTopOf="@id/topTextInput"
+        app:layout_constraintDimensionRatio="H,1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/topTextPreview"
+        style="@style/AppTheme.Meme.Preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/meme_preview_text_margin"
+        app:layout_constraintEnd_toEndOf="@id/meme"
+        app:layout_constraintStart_toStartOf="@id/meme"
+        app:layout_constraintTop_toTopOf="@id/meme" />
+
+    <TextView
+        android:id="@+id/bottomTextPreview"
+        style="@style/AppTheme.Meme.Preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/meme_preview_text_margin"
+        app:layout_constraintBottom_toBottomOf="@id/meme"
+        app:layout_constraintEnd_toEndOf="@id/meme"
+        app:layout_constraintStart_toStartOf="@id/meme" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/topTextInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/bottomTextInput"
+        app:layout_constraintEnd_toEndOf="@id/meme"
+        app:layout_constraintStart_toStartOf="@id/meme">
+
+        <EditText
+            android:id="@+id/topText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/meme_top_text"
+            android:imeOptions="actionNext"
+            android:inputType="text" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/bottomTextInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/send"
+        app:layout_constraintEnd_toEndOf="@id/meme"
+        app:layout_constraintStart_toStartOf="@id/meme">
+
+        <EditText
+            android:id="@+id/bottomText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/meme_bottom_text"
+            android:imeOptions="actionDone"
+            android:inputType="text" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/send"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/meme_preview_button_height"
+        android:text="@string/meme_create"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

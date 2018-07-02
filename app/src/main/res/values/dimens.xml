@@ -4,12 +4,22 @@
     <dimen name="cardview_elevation">5dp</dimen>
     <dimen name="cardview_corner_radius">0dp</dimen>
     <dimen name="cardview_content_padding">10dp</dimen>
-    
-    <!-- Memes -->
+
+    <!-- Memes (List) -->
+    <dimen name="memes_fab_margin">16dp</dimen>
     <dimen name="meme_avatar_width">40dp</dimen>
     <dimen name="meme_avatar_margin_start">10dp</dimen>
     <dimen name="meme_user_margin_start">10dp</dimen>
     <dimen name="meme_created_at_icon_width">15dp</dimen>
     <dimen name="meme_created_at_icon_margin_end">2dp</dimen>
     <dimen name="meme_image_margin_top">10dp</dimen>
+
+    <!-- Meme (Form) -->
+    <dimen name="meme_preview_margin">10dp</dimen>
+    <dimen name="meme_preview_image_padding">20dp</dimen>
+    <dimen name="meme_preview_text_size">24sp</dimen>
+    <dimen name="meme_preview_text_margin">40dp</dimen>
+    <dimen name="meme_preview_button_height">60dp</dimen>
+
+
 </resources>

@@ -1,9 +1,11 @@
 package org.aerogear.android.app.memeolist.ui;
 
+import android.content.Intent;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 import android.os.Bundle;
+import android.support.v4.widget.CircularProgressDrawable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,8 +31,9 @@ import javax.annotation.Nonnull;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class MemeListActivity extends AppCompatActivity {
 
     @BindView(R.id.memes)
     RecyclerView mMemes;
@@ -44,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_meme_list);
 
         ButterKnife.bind(this);
 
@@ -56,11 +59,6 @@ public class MainActivity extends AppCompatActivity {
                 .into(mMemes);
 
         mSwipe.setOnRefreshListener(() -> retrieveMemes());
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
 
         retrieveMemes();
     }
@@ -88,16 +86,22 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public static void displayAvatar(ImageView imageView) {
+    @BindingAdapter("memeImage")
+    public static void displayMeme(ImageView imageView, ListMemesQuery.AllMeme meme) {
+        CircularProgressDrawable placeHolder = new CircularProgressDrawable(imageView.getContext());
+        placeHolder.setStrokeWidth(5f);
+        placeHolder.setCenterRadius(30f);
+        placeHolder.start();
+
         Glide.with(imageView)
-                .load(R.mipmap.ic_launcher)
-                .apply(RequestOptions.circleCropTransform())
+                .load(meme.photoUrl())
+                .apply(RequestOptions.placeholderOf(placeHolder))
                 .into(imageView);
     }
 
-    @BindingAdapter("memeImage")
-    public static void displayMeme(ImageView imageView, ListMemesQuery.AllMeme meme) {
-        Glide.with(imageView).load(meme.photoUrl()).into(imageView);
+    @OnClick(R.id.newMeme)
+    void newMeme() {
+        startActivity(new Intent(this, MemeFormActivity.class));
     }
 
 }
