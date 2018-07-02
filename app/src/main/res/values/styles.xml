@@ -17,11 +17,14 @@
     </style>
 
     <style name="AppTheme.Meme.Preview" parent="AppTheme">
-        <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/meme_preview_text_size</item>
         <item name="android:fontFamily">@font/open_sans_extrabold</item>
+        <item name="android:shadowColor">@color/black</item>
+        <item name="android:shadowDx">5.0</item>
+        <item name="android:shadowDy">5.0</item>
+        <item name="android:shadowRadius">5.0</item>
     </style>
 
 </resources>

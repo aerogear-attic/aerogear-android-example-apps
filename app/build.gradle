@@ -43,7 +43,7 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:1.1.2"
 
     implementation "org.aerogear:android-core:$aerogear_version"
-    
+
     implementation "com.apollographql.apollo:apollo-runtime:$apollo_version"
     implementation "com.apollographql.apollo:apollo-android-support:$apollo_version"
 
@@ -54,6 +54,10 @@ dependencies {
 
     implementation "com.github.bumptech.glide:glide:$glide_version"
     annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
+
+    implementation "com.theartofdev.edmodo:android-image-cropper:2.7.0"
+
+    implementation "com.afollestad.material-dialogs:core:0.9.6.0"
 
     testImplementation "junit:junit:4.12"
     androidTestImplementation "com.android.support.test:runner:1.0.2"

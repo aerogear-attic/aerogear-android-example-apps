@@ -16,10 +16,9 @@
 
     <!-- Meme (Form) -->
     <dimen name="meme_preview_margin">10dp</dimen>
-    <dimen name="meme_preview_image_padding">20dp</dimen>
-    <dimen name="meme_preview_text_size">24sp</dimen>
-    <dimen name="meme_preview_text_margin">40dp</dimen>
+    <dimen name="meme_preview_image_padding">10dp</dimen>
+    <dimen name="meme_preview_text_size">36sp</dimen>
+    <dimen name="meme_preview_text_margin">15dp</dimen>
     <dimen name="meme_preview_button_height">60dp</dimen>
-
 
 </resources>
