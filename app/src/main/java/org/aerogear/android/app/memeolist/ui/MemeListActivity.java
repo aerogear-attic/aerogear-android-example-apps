@@ -23,9 +23,12 @@ import com.github.nitrico.lastadapter.LastAdapter;
 import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.graphql.ListMemesQuery;
+import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.sync.SyncService;
+
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -41,7 +44,7 @@ public class MemeListActivity extends AppCompatActivity {
     @BindView(R.id.swipe)
     SwipeRefreshLayout mSwipe;
 
-    private ObservableList<ListMemesQuery.AllMeme> memes = new ObservableArrayList<>();
+    private ObservableList<Meme> memes = new ObservableArrayList<>();
     private ApolloClient apolloClient;
 
     @Override
@@ -55,7 +58,7 @@ public class MemeListActivity extends AppCompatActivity {
 
         mMemes.setLayoutManager(new LinearLayoutManager(this));
         new LastAdapter(memes, BR.meme)
-                .map(ListMemesQuery.AllMeme.class, R.layout.item_meme)
+                .map(Meme.class, R.layout.item_meme)
                 .into(mMemes);
 
         mSwipe.setOnRefreshListener(() -> retrieveMemes());
@@ -71,7 +74,12 @@ public class MemeListActivity extends AppCompatActivity {
                     public void onResponse(@Nonnull Response<ListMemesQuery.Data> response) {
                         new AppExecutors().mainThread().submit(() -> {
                             memes.clear();
-                            memes.addAll(response.data().allMemes());
+
+                            List<ListMemesQuery.AllMeme> allMemes = response.data().allMemes();
+
+                            for (ListMemesQuery.AllMeme meme : allMemes) {
+                                memes.add(new Meme(meme.id(), meme.photoUrl()));
+                            }
 
                             mSwipe.setRefreshing(false);
                         });
@@ -87,14 +95,14 @@ public class MemeListActivity extends AppCompatActivity {
     }
 
     @BindingAdapter("memeImage")
-    public static void displayMeme(ImageView imageView, ListMemesQuery.AllMeme meme) {
+    public static void displayMeme(ImageView imageView, Meme meme) {
         CircularProgressDrawable placeHolder = new CircularProgressDrawable(imageView.getContext());
         placeHolder.setStrokeWidth(5f);
         placeHolder.setCenterRadius(30f);
         placeHolder.start();
 
         Glide.with(imageView)
-                .load(meme.photoUrl())
+                .load(meme.getPhotoUrl())
                 .apply(RequestOptions.placeholderOf(placeHolder))
                 .into(imageView);
     }

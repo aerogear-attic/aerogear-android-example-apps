@@ -7,6 +7,11 @@ public class Meme {
     private String id;
     private String photoUrl;
 
+    public Meme(String id, String photoUrl) {
+        this.id = id;
+        this.photoUrl = photoUrl;
+    }
+
     public String getId() {
         return id;
     }

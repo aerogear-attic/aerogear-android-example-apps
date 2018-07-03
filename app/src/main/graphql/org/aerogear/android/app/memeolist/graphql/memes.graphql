@@ -7,6 +7,7 @@ query listMemes {
 
 mutation newMeme($url: String!) {
   createMeme(photoUrl: $url) {
-      photoUrl
+    id
+    photoUrl
   }
 }
