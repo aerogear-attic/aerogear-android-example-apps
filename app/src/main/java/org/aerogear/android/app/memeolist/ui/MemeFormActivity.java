@@ -267,7 +267,7 @@ public class MemeFormActivity extends AppCompatActivity {
             text = mTopText.getText().toString();
         }
         
-        return "https://memegen.link/custom/" + text + ".jpg" +
+        return "https://memegen.link/custom/" + text.replace(" ", "_") + ".jpg" +
                 "?alt=" + imageUrl +
                 "&font=opensans-extrabold";
     }
