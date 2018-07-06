@@ -5,8 +5,8 @@
     <string name="meme_bottom_text">Bottom Text</string>
     <string name="meme_create">Create</string>
     <string name="meme_need_image">An image is required to create a meme</string>
+    <string name="meme_need_text">Top text is required to create a meme</string>
     <string name="meme_create_meme">Create meme</string>
-    <string name="meme_no_text_found">There is no top or bottom text for this meme. Are you sure do you want to create it?</string>
     <string name="sure">Sure</string>
     <string name="no">No!!!</string>
     <string name="error_upload">Error while uploading image file</string>

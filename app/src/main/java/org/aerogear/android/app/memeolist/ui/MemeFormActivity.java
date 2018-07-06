@@ -238,6 +238,16 @@ public class MemeFormActivity extends AppCompatActivity {
             return false;
         }
 
+        if(mTopText.getText().toString().isEmpty()) {
+            new MaterialDialog.Builder(this)
+                    .title(R.string.meme_create_meme)
+                    .content(R.string.meme_need_text)
+                    .positiveText(R.string.ok)
+                    .cancelable(false)
+                    .show();
+            return false;
+        }
+
         return true;
 
     }
@@ -251,8 +261,13 @@ public class MemeFormActivity extends AppCompatActivity {
     }
 
     private String createMemeUrl(String imageUrl) {
-        return "https://memegen.link/custom/"
-                + mTopText.getText().toString() + "/" + mBottomText.getText().toString() + ".jpg" +
+        String text = mTopText.getText().toString() + "/" + mBottomText.getText().toString();
+
+        if(mBottomText.getText().toString().isEmpty()) {
+            text = mTopText.getText().toString();
+        }
+        
+        return "https://memegen.link/custom/" + text + ".jpg" +
                 "?alt=" + imageUrl +
                 "&font=opensans-extrabold";
     }
