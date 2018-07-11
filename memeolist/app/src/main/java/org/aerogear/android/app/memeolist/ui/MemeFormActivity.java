@@ -12,11 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.apollographql.apollo.ApolloCall;
-import com.apollographql.apollo.ApolloClient;
-import com.apollographql.apollo.ApolloMutationCall;
 import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -31,8 +27,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Objects;
-
-import javax.annotation.Nonnull;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -172,30 +166,26 @@ public class MemeFormActivity extends AppCompatActivity {
 
     private void saveMeme(String imageUrl) {
 
-        ApolloClient apolloClient = SyncService.getInstance().getApolloClient();
+        SyncService
+                .getInstance()
+                .mutation(NewMemeMutation.builder().url(createMemeUrl(imageUrl)).build())
+                .execute(NewMemeMutation.Data.class)
+                .respondOn(new AppExecutors().mainThread())
+                .respondWith(new Responder<Response<NewMemeMutation.Data>>() {
+                    @Override
+                    public void onResult(Response<NewMemeMutation.Data> value) {
+                        materialDialog.dismiss();
+                        displayMessage(R.string.meme_created);
+                        finish();
+                    }
 
-        NewMemeMutation mutation = NewMemeMutation.builder()
-                .url(createMemeUrl(imageUrl))
-                .build();
-
-        ApolloMutationCall<NewMemeMutation.Data> mutate = apolloClient.mutate(mutation);
-        mutate.enqueue(new ApolloCall.Callback<NewMemeMutation.Data>() {
-            @Override
-            public void onResponse(@Nonnull Response<NewMemeMutation.Data> response) {
-                new AppExecutors().mainThread().submit(() -> {
-                    materialDialog.dismiss();
-                    displayMessage(R.string.meme_created);
-                    finish();
+                    @Override
+                    public void onException(Exception exception) {
+                        materialDialog.dismiss();
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
+                        displayMessage(exception.getMessage());
+                    }
                 });
-            }
-
-            @Override
-            public void onFailure(@Nonnull ApolloException e) {
-                materialDialog.dismiss();
-                MobileCore.getLogger().error(e.getMessage(), e);
-                displayMessage(e.getMessage());
-            }
-        });
 
     }
 
@@ -238,7 +228,7 @@ public class MemeFormActivity extends AppCompatActivity {
             return false;
         }
 
-        if(mTopText.getText().toString().isEmpty()) {
+        if (mTopText.getText().toString().isEmpty()) {
             new MaterialDialog.Builder(this)
                     .title(R.string.meme_create_meme)
                     .content(R.string.meme_need_text)
@@ -263,10 +253,10 @@ public class MemeFormActivity extends AppCompatActivity {
     private String createMemeUrl(String imageUrl) {
         String text = mTopText.getText().toString() + "/" + mBottomText.getText().toString();
 
-        if(mBottomText.getText().toString().isEmpty()) {
+        if (mBottomText.getText().toString().isEmpty()) {
             text = mTopText.getText().toString();
         }
-        
+
         return "https://memegen.link/custom/" + text.replace(" ", "_") + ".jpg" +
                 "?alt=" + imageUrl +
                 "&font=opensans-extrabold";
