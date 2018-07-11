@@ -4,5 +4,13 @@
   "namespace": "myproject",
   "clientId": "app-android-memeolist",
   "services": [
+    {
+      "id": "sync",
+      "name": "sync",
+      "type": "sync",
+      "url": "https://api.graph.cool/simple/v1/cjiyvc1wa40kg011846ev0ff8",
+      "config": {
+      }
+    }
   ]
 }

@@ -62,6 +62,11 @@ public class MemeListActivity extends AppCompatActivity {
                 .into(mMemes);
 
         mSwipe.setOnRefreshListener(() -> retrieveMemes());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         retrieveMemes();
     }
