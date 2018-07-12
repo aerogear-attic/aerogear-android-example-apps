@@ -1,0 +1,13 @@
+query listMemes {
+  allMemes(orderBy: id_DESC) {
+    id
+    photoUrl
+  }
+}
+
+mutation newMeme($url: String!) {
+  createMeme(photoUrl: $url) {
+    id
+    photoUrl
+  }
+}
