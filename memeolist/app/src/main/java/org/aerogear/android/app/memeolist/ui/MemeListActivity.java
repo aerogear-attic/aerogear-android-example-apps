@@ -19,6 +19,7 @@ import com.github.nitrico.lastadapter.LastAdapter;
 import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.graphql.ListMemesQuery;
+import org.aerogear.android.app.memeolist.graphql.NewMemeCreatedSubscription;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
@@ -55,14 +56,35 @@ public class MemeListActivity extends AppCompatActivity {
                 .map(Meme.class, R.layout.item_meme)
                 .into(mMemes);
 
-        mSwipe.setOnRefreshListener(() -> retrieveMemes());
+        mSwipe.setOnRefreshListener(this::retrieveMemes);
+
+        subscribeMemes();
+        retrieveMemes();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    private void subscribeMemes() {
 
-        retrieveMemes();
+        SyncService.getInstance().subscribe(new NewMemeCreatedSubscription())
+                .execute(NewMemeCreatedSubscription.Data.class)
+                .respondOn(new AppExecutors().mainThread())
+                .requestMap(response -> {
+                    NewMemeCreatedSubscription.Node node = response.data().Meme().node();
+                    Meme newMeme = new Meme(node.id(), node.photoUrl());
+                    return Requester.emit(newMeme);
+                })
+                .respondWith(new Responder<Meme>() {
+                    @Override
+                    public void onResult(Meme meme) {
+                        memes.add(0, meme);
+                        mMemes.smoothScrollToPosition(0);
+                    }
+
+                    @Override
+                    public void onException(Exception exception) {
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
+                    }
+                });
+
     }
 
     private void retrieveMemes() {
