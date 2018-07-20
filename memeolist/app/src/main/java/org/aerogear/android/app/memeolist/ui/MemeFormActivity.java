@@ -21,12 +21,12 @@ import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.aerogear.android.app.memeolist.R;
+import org.aerogear.android.app.memeolist.SyncService;
 import org.aerogear.android.app.memeolist.graphql.NewMemeMutation;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Requester;
 import org.aerogear.mobile.core.reactive.Responder;
-import org.aerogear.mobile.sync.SyncService;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -172,7 +172,7 @@ public class MemeFormActivity extends AppCompatActivity {
 
     private void saveMeme(String imageUrl) {
 
-        ApolloClient apolloClient = SyncService.getInstance().getApolloClient();
+        ApolloClient apolloClient = SyncService.getInstance(this).getApolloClient();
 
         NewMemeMutation mutation = NewMemeMutation.builder()
                 .url(createMemeUrl(imageUrl))

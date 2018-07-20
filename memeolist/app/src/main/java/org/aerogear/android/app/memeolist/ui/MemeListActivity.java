@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.ApolloClient;
 import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.api.cache.http.HttpCachePolicy;
+import com.apollographql.apollo.cache.http.DiskLruHttpCacheStore;
 import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -22,12 +24,13 @@ import com.github.nitrico.lastadapter.LastAdapter;
 
 import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.R;
+import org.aerogear.android.app.memeolist.SyncService;
 import org.aerogear.android.app.memeolist.graphql.ListMemesQuery;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
-import org.aerogear.mobile.sync.SyncService;
 
+import java.io.File;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -38,83 +41,84 @@ import butterknife.OnClick;
 
 public class MemeListActivity extends AppCompatActivity {
 
-    @BindView(R.id.memes)
-    RecyclerView mMemes;
+  @BindView(R.id.memes)
+  RecyclerView mMemes;
 
-    @BindView(R.id.swipe)
-    SwipeRefreshLayout mSwipe;
+  @BindView(R.id.swipe)
+  SwipeRefreshLayout mSwipe;
 
-    private ObservableList<Meme> memes = new ObservableArrayList<>();
-    private ApolloClient apolloClient;
+  private ObservableList<Meme> memes = new ObservableArrayList<>();
+  private ApolloClient apolloClient;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_meme_list);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_meme_list);
 
-        ButterKnife.bind(this);
+    ButterKnife.bind(this);
 
-        apolloClient = SyncService.getInstance().getApolloClient();
+    apolloClient = SyncService.getInstance(this).getApolloClient();
 
-        mMemes.setLayoutManager(new LinearLayoutManager(this));
-        new LastAdapter(memes, BR.meme)
-                .map(Meme.class, R.layout.item_meme)
-                .into(mMemes);
+    mMemes.setLayoutManager(new LinearLayoutManager(this));
+    new LastAdapter(memes, BR.meme)
+            .map(Meme.class, R.layout.item_meme)
+            .into(mMemes);
 
-        mSwipe.setOnRefreshListener(() -> retrieveMemes());
-    }
+    mSwipe.setOnRefreshListener(() -> retrieveMemes());
+  }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+  @Override
+  protected void onStart() {
+    super.onStart();
 
-        retrieveMemes();
-    }
+    retrieveMemes();
+  }
 
-    private void retrieveMemes() {
-        apolloClient
-                .query(ListMemesQuery.builder().build())
-                .enqueue(new ApolloCall.Callback<ListMemesQuery.Data>() {
-                    @Override
-                    public void onResponse(@Nonnull Response<ListMemesQuery.Data> response) {
-                        new AppExecutors().mainThread().submit(() -> {
-                            memes.clear();
+  private void retrieveMemes() {
+    apolloClient
+            .query(ListMemesQuery.builder().build())
+            .httpCachePolicy(HttpCachePolicy.NETWORK_FIRST)
+            .enqueue(new ApolloCall.Callback<ListMemesQuery.Data>() {
+              @Override
+              public void onResponse(@Nonnull Response<ListMemesQuery.Data> response) {
+                new AppExecutors().mainThread().submit(() -> {
+                  memes.clear();
 
-                            List<ListMemesQuery.AllMeme> allMemes = response.data().allMemes();
+                  List<ListMemesQuery.AllMeme> allMemes = response.data().allMemes();
 
-                            for (ListMemesQuery.AllMeme meme : allMemes) {
-                                memes.add(new Meme(meme.id(), meme.photoUrl()));
-                            }
+                  for (ListMemesQuery.AllMeme meme : allMemes) {
+                    memes.add(new Meme(meme.id(), meme.photoUrl()));
+                  }
 
-                            mSwipe.setRefreshing(false);
-                        });
-                    }
-
-                    @Override
-                    public void onFailure(@Nonnull ApolloException e) {
-                        MobileCore.getLogger().error(e.getMessage(), e);
-
-                        mSwipe.setRefreshing(false);
-                    }
+                  mSwipe.setRefreshing(false);
                 });
-    }
+              }
 
-    @BindingAdapter("memeImage")
-    public static void displayMeme(ImageView imageView, Meme meme) {
-        CircularProgressDrawable placeHolder = new CircularProgressDrawable(imageView.getContext());
-        placeHolder.setStrokeWidth(5f);
-        placeHolder.setCenterRadius(30f);
-        placeHolder.start();
+              @Override
+              public void onFailure(@Nonnull ApolloException e) {
+                MobileCore.getLogger().error(e.getMessage(), e);
 
-        Glide.with(imageView)
-                .load(meme.getPhotoUrl())
-                .apply(RequestOptions.placeholderOf(placeHolder))
-                .into(imageView);
-    }
+                mSwipe.setRefreshing(false);
+              }
+            });
+  }
 
-    @OnClick(R.id.newMeme)
-    void newMeme() {
-        startActivity(new Intent(this, MemeFormActivity.class));
-    }
+  @BindingAdapter("memeImage")
+  public static void displayMeme(ImageView imageView, Meme meme) {
+    CircularProgressDrawable placeHolder = new CircularProgressDrawable(imageView.getContext());
+    placeHolder.setStrokeWidth(5f);
+    placeHolder.setCenterRadius(30f);
+    placeHolder.start();
+
+    Glide.with(imageView)
+            .load(meme.getPhotoUrl())
+            .apply(RequestOptions.placeholderOf(placeHolder))
+            .into(imageView);
+  }
+
+  @OnClick(R.id.newMeme)
+  void newMeme() {
+    startActivity(new Intent(this, MemeFormActivity.class));
+  }
 
 }
