@@ -42,6 +42,8 @@ dependencies {
     implementation "com.android.support:design:$android_support_version"
     implementation "com.android.support.constraint:constraint-layout:1.1.2"
 
+    compile 'com.apollographql.apollo:apollo-http-cache:1.0.0-alpha'
+
     implementation "org.aerogear:android-sync:$aerogear_version"
 
     implementation "com.jakewharton:butterknife:$butterknife_version"
