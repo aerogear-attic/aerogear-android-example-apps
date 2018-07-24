@@ -28,6 +28,7 @@ import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory;
 import com.apollographql.apollo.cache.normalized.sql.ApolloSqlHelper;
 import com.apollographql.apollo.cache.normalized.sql.SqlNormalizedCacheFactory;
 import com.apollographql.apollo.exception.ApolloException;
+import com.apollographql.apollo.subscription.SubscriptionTransport;
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport.Factory;
 
 import org.aerogear.mobile.core.MobileCore;
@@ -52,17 +53,17 @@ public final class SyncService {
 
   public SyncService(@Nonnull OkHttpClient okHttpClient, @Nonnull String serverUrl,
                      @Nonnull String webSocketUrl, Context context) {
-    DiskLruHttpCacheStore cacheStore = createHttpCache();
+    DiskLruHttpCacheStore cacheStore = createHttpCache(context);
 
     ApolloClient.Builder builder = ApolloClient.builder();
     builder.serverUrl(nonNull(serverUrl, "serverUrl"))
-            .okHttpClient(nonNull(okHttpClient, "okHttpClient"))
-            .httpCache(new ApolloHttpCache(cacheStore));
-            //.subscriptionTransportFactory(new Factory(webSocketUrl, okHttpClient));
+            .subscriptionTransportFactory(new Factory(webSocketUrl, okHttpClient))
+            .okHttpClient(nonNull(okHttpClient, "okHttpClient"));
 
     NormalizedCacheFactory cacheFactory = new LruNormalizedCacheFactory(EvictionPolicy.builder().maxSizeBytes(10 * 1024).build());
     //builder.normalizedCache(cacheFactory);
-    //createSQLCache(builder, context);
+    //builder.httpCache(new ApolloHttpCache(cacheStore));
+    createSQLCache(builder, context);
 
     apolloClient = builder.build();
   }
@@ -102,9 +103,9 @@ public final class SyncService {
   }
 
   @NonNull
-  private DiskLruHttpCacheStore createHttpCache() {
+  private DiskLruHttpCacheStore createHttpCache(Context context) {
     //Directory where cached responses will be stored
-    File file = new File("/cache/");
+    File file = new File(context.getApplicationInfo().dataDir.concat("/cache"));
 
     //Size in bytes of the cache
     int size = 1024 * 1024;
@@ -127,116 +128,6 @@ public final class SyncService {
 
   public ApolloClient getApolloClient() {
     return apolloClient;
-  }
-
-  public SyncQuery query(@Nonnull Query query) {
-    return new SyncQuery(this.apolloClient, nonNull(query, "query"));
-  }
-
-  public SyncMutation mutation(@Nonnull Mutation mutation) {
-    return new SyncMutation(this.apolloClient, nonNull(mutation, "mutation"));
-  }
-
-  public SyncSubscription subscribe(@Nonnull Subscription subscription) {
-    return new SyncSubscription(this.apolloClient, nonNull(subscription, "subscription"));
-  }
-
-  public static class SyncQuery {
-
-    private final ApolloClient apolloClient;
-    private final Query query;
-
-    SyncQuery(ApolloClient apolloClient, Query query) {
-      this.apolloClient = apolloClient;
-      this.query = query;
-    }
-
-    public <T extends Operation.Data> Request<Response<T>> execute(
-            @Nonnull Class<T> responseDataClass) {
-
-      nonNull(responseDataClass, "responseDataClass");
-
-      return Requester.call((Responder<Response<T>> requestCallback) -> apolloClient
-              .query(query).enqueue(new ApolloCall.Callback<T>() {
-                @Override
-                public void onResponse(@Nonnull Response<T> response) {
-                  requestCallback.onResult(response);
-                }
-
-                @Override
-                public void onFailure(@Nonnull ApolloException e) {
-                  requestCallback.onException(e);
-                }
-              })).respondOn(new AppExecutors().networkThread());
-
-    }
-
-  }
-
-  public static class SyncMutation {
-
-    private final ApolloClient apolloClient;
-    private final Mutation mutation;
-
-    SyncMutation(ApolloClient apolloClient, Mutation mutation) {
-      this.apolloClient = apolloClient;
-      this.mutation = mutation;
-    }
-
-    public <T extends Operation.Data> Request<Response<T>> execute(
-            @Nonnull Class<T> responseDataClass) {
-
-      nonNull(responseDataClass, "responseDataClass");
-
-      return Requester.call((Responder<Response<T>> requestCallback) -> apolloClient
-              .mutate(mutation).enqueue(new ApolloCall.Callback<T>() {
-                @Override
-                public void onResponse(@Nonnull Response<T> response) {
-                  requestCallback.onResult(response);
-                }
-
-                @Override
-                public void onFailure(@Nonnull ApolloException e) {
-                  requestCallback.onException(e);
-                }
-              })).respondOn(new AppExecutors().networkThread());
-
-    }
-  }
-
-  public static class SyncSubscription {
-
-    private final ApolloClient apolloClient;
-    private final Subscription subscription;
-
-    SyncSubscription(ApolloClient apolloClient, Subscription subscription) {
-      this.apolloClient = apolloClient;
-      this.subscription = subscription;
-    }
-
-    public <T extends Operation.Data> Request<Response<T>> execute(
-            @Nonnull Class<T> responseDataClass) {
-
-      nonNull(responseDataClass, "responseDataClass");
-
-      return Requester.call((Responder<Response<T>> requestCallback) -> apolloClient
-              .subscribe(subscription).execute(new ApolloSubscriptionCall.Callback() {
-                @Override
-                public void onResponse(@NotNull Response response) {
-                  requestCallback.onResult(response);
-                }
-
-                @Override
-                public void onFailure(@NotNull ApolloException e) {
-                  requestCallback.onException(e);
-                }
-
-                @Override
-                public void onCompleted() {
-                }
-              })).requestOn(new AppExecutors().networkThread());
-
-    }
   }
 
 }

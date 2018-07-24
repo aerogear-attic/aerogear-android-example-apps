@@ -10,10 +10,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.ApolloClient;
+import com.apollographql.apollo.ApolloSubscriptionCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy;
 import com.apollographql.apollo.cache.http.DiskLruHttpCacheStore;
@@ -26,9 +28,13 @@ import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.SyncService;
 import org.aerogear.android.app.memeolist.graphql.ListMemesQuery;
+import org.aerogear.android.app.memeolist.graphql.NewMemeCreatedSubscription;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
+import org.aerogear.mobile.core.reactive.Requester;
+import org.aerogear.mobile.core.reactive.Responder;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
@@ -70,8 +76,31 @@ public class MemeListActivity extends AppCompatActivity {
   @Override
   protected void onStart() {
     super.onStart();
-
+    subscribeMemes();
     retrieveMemes();
+  }
+
+
+  private void subscribeMemes() {
+    apolloClient.subscribe(new NewMemeCreatedSubscription()).execute(new ApolloSubscriptionCall.Callback<NewMemeCreatedSubscription.Data>() {
+      @Override
+      public void onResponse(@NotNull Response<NewMemeCreatedSubscription.Data> response) {
+        NewMemeCreatedSubscription.Node node = response.data().Meme().node();
+        Meme newMeme = new Meme(node.id(), node.photoUrl());
+        memes.add(0, newMeme);
+        mMemes.smoothScrollToPosition(0);
+
+      }
+
+      @Override
+      public void onFailure(@NotNull ApolloException e) {
+        Log.e("MemeList", "error on subscription", e);
+      }
+
+      @Override
+      public void onCompleted() {
+      }
+    });
   }
 
   private void retrieveMemes() {
