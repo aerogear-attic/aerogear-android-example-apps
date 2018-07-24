@@ -8,8 +8,9 @@
       "id": "sync",
       "name": "sync",
       "type": "sync",
-      "url": "https://api.graph.cool/simple/v1/cjiyvc1wa40kg011846ev0ff8",
+      "url": "http://localhost:8000/graphql",
       "config": {
+        "subscription": "wss://localhost:8000/graphql"
       }
     }
   ]

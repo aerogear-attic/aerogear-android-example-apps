@@ -21,12 +21,12 @@ import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.aerogear.android.app.memeolist.R;
+import org.aerogear.android.app.memeolist.SyncService;
 import org.aerogear.android.app.memeolist.graphql.NewMemeMutation;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Requester;
 import org.aerogear.mobile.core.reactive.Responder;
-import org.aerogear.mobile.sync.SyncService;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -149,30 +149,31 @@ public class MemeFormActivity extends AppCompatActivity {
     void send() {
         if (isValid()) {
 
-            materialDialog.show();
-
-            uploadImage()
-                    .respondOn(new AppExecutors().mainThread())
-                    .respondWith(new Responder<String>() {
-                        @Override
-                        public void onResult(String imageUrl) {
-                            saveMeme(imageUrl);
-                        }
-
-                        @Override
-                        public void onException(Exception exception) {
-                            materialDialog.dismiss();
-                            MobileCore.getLogger().error(exception.getMessage(), exception);
-                            displayMessage(R.string.error_upload);
-                        }
-                    });
+          materialDialog.show();
+          // TODO display image from local source
+          saveMeme("https://i.imgur.com/HD5ouHo.jpg");
+//            uploadImage()
+//                    .respondOn(new AppExecutors().mainThread())
+//                    .respondWith(new Responder<String>() {
+//                        @Override
+//                        public void onResult(String imageUrl) {
+//                            saveMeme(imageUrl);
+//                        }
+//
+//                        @Override
+//                        public void onException(Exception exception) {
+//                            materialDialog.dismiss();
+//                            MobileCore.getLogger().error(exception.getMessage(), exception);
+//                            displayMessage(R.string.error_upload);
+//                        }
+//                    });
 
         }
     }
 
     private void saveMeme(String imageUrl) {
 
-        ApolloClient apolloClient = SyncService.getInstance().getApolloClient();
+        ApolloClient apolloClient = SyncService.getInstance(this).getApolloClient();
 
         NewMemeMutation mutation = NewMemeMutation.builder()
                 .url(createMemeUrl(imageUrl))
@@ -193,7 +194,6 @@ public class MemeFormActivity extends AppCompatActivity {
             public void onFailure(@Nonnull ApolloException e) {
                 materialDialog.dismiss();
                 MobileCore.getLogger().error(e.getMessage(), e);
-                displayMessage(e.getMessage());
             }
         });
 
@@ -227,25 +227,9 @@ public class MemeFormActivity extends AppCompatActivity {
     }
 
     private boolean isValid() {
-
-        if (file == null) {
-            new MaterialDialog.Builder(this)
-                    .title(R.string.meme_create_meme)
-                    .content(R.string.meme_need_image)
-                    .positiveText(R.string.ok)
-                    .cancelable(false)
-                    .show();
-            return false;
-        }
-
         if(mTopText.getText().toString().isEmpty()) {
-            new MaterialDialog.Builder(this)
-                    .title(R.string.meme_create_meme)
-                    .content(R.string.meme_need_text)
-                    .positiveText(R.string.ok)
-                    .cancelable(false)
-                    .show();
-            return false;
+          mTopText.setText("Default meme");
+            return true;
         }
 
         return true;
