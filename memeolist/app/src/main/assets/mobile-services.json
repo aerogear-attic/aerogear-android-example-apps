@@ -10,6 +10,7 @@
       "type": "sync",
       "url": "https://api.graph.cool/simple/v1/cjiyvc1wa40kg011846ev0ff8",
       "config": {
+        "subscription": "wss://subscriptions.us-west-2.graph.cool/v1/cjiyvc1wa40kg011846ev0ff8"
       }
     }
   ]

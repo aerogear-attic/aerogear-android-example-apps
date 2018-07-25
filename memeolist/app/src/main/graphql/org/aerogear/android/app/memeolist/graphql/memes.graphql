@@ -11,3 +11,17 @@ mutation newMeme($url: String!) {
     photoUrl
   }
 }
+
+subscription newMemeCreated {
+  Meme(
+    filter: {
+      mutation_in: [CREATED]
+    }
+  ) {
+    mutation
+    node {
+      id
+      photoUrl
+    }
+  }
+}

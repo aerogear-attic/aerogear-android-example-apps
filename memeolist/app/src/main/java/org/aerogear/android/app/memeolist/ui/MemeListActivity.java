@@ -12,10 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
 
-import com.apollographql.apollo.ApolloCall;
-import com.apollographql.apollo.ApolloClient;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.github.nitrico.lastadapter.LastAdapter;
@@ -23,14 +19,16 @@ import com.github.nitrico.lastadapter.LastAdapter;
 import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.graphql.ListMemesQuery;
+import org.aerogear.android.app.memeolist.graphql.NewMemeCreatedSubscription;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
+import org.aerogear.mobile.core.reactive.Requester;
+import org.aerogear.mobile.core.reactive.Responder;
 import org.aerogear.mobile.sync.SyncService;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nonnull;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,7 +43,6 @@ public class MemeListActivity extends AppCompatActivity {
     SwipeRefreshLayout mSwipe;
 
     private ObservableList<Meme> memes = new ObservableArrayList<>();
-    private ApolloClient apolloClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,49 +51,75 @@ public class MemeListActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        apolloClient = SyncService.getInstance().getApolloClient();
-
         mMemes.setLayoutManager(new LinearLayoutManager(this));
         new LastAdapter(memes, BR.meme)
                 .map(Meme.class, R.layout.item_meme)
                 .into(mMemes);
 
-        mSwipe.setOnRefreshListener(() -> retrieveMemes());
-    }
+        mSwipe.setOnRefreshListener(this::retrieveMemes);
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
+        subscribeMemes();
         retrieveMemes();
     }
 
-    private void retrieveMemes() {
-        apolloClient
-                .query(ListMemesQuery.builder().build())
-                .enqueue(new ApolloCall.Callback<ListMemesQuery.Data>() {
+    private void subscribeMemes() {
+
+        SyncService.getInstance().subscribe(new NewMemeCreatedSubscription())
+                .execute(NewMemeCreatedSubscription.Data.class)
+                .respondOn(new AppExecutors().mainThread())
+                .requestMap(response -> {
+                    NewMemeCreatedSubscription.Node node = response.data().Meme().node();
+                    Meme newMeme = new Meme(node.id(), node.photoUrl());
+                    return Requester.emit(newMeme);
+                })
+                .respondWith(new Responder<Meme>() {
                     @Override
-                    public void onResponse(@Nonnull Response<ListMemesQuery.Data> response) {
-                        new AppExecutors().mainThread().submit(() -> {
-                            memes.clear();
-
-                            List<ListMemesQuery.AllMeme> allMemes = response.data().allMemes();
-
-                            for (ListMemesQuery.AllMeme meme : allMemes) {
-                                memes.add(new Meme(meme.id(), meme.photoUrl()));
-                            }
-
-                            mSwipe.setRefreshing(false);
-                        });
+                    public void onResult(Meme meme) {
+                        memes.add(0, meme);
+                        mMemes.smoothScrollToPosition(0);
                     }
 
                     @Override
-                    public void onFailure(@Nonnull ApolloException e) {
-                        MobileCore.getLogger().error(e.getMessage(), e);
+                    public void onException(Exception exception) {
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
+                    }
+                });
+
+    }
+
+    private void retrieveMemes() {
+
+        SyncService
+                .getInstance()
+                .query(ListMemesQuery.builder().build())
+                .execute(ListMemesQuery.Data.class)
+                .respondOn(new AppExecutors().mainThread())
+                .requestMap(response -> {
+                    List<Meme> memes = new ArrayList<>();
+
+                    for (ListMemesQuery.AllMeme meme : response.data().allMemes()) {
+                        memes.add(new Meme(meme.id(), meme.photoUrl()));
+                    }
+
+                    return Requester.emit(memes);
+                })
+                .respondWith(new Responder<List<Meme>>() {
+                    @Override
+                    public void onResult(List<Meme> memeList) {
+                        memes.clear();
+                        memes.addAll(memeList);
+
+                        mSwipe.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onException(Exception exception) {
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
 
                         mSwipe.setRefreshing(false);
                     }
                 });
+
     }
 
     @BindingAdapter("memeImage")
