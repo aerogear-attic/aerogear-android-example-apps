@@ -58,7 +58,7 @@ public class MemeListActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_meme_list);
     Login login = new Login();
-    login.createProfile();
+    login.createOrRetrieveProfile();
 
     ButterKnife.bind(this);
     apolloClient = SyncClient.getInstance().getApolloClient();

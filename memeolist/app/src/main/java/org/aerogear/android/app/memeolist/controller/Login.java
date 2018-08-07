@@ -13,13 +13,15 @@ import org.aerogear.android.app.memeolist.graphql.ProfileQuery;
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  * Temporary login controller used for creating user profile
  */
 public class Login {
 
 
-  public void retrieveProfile() {
+  public void createOrRetrieveProfile() {
     UserProfile current = UserProfile.getCurrent();
     ApolloClient apolloClient = SyncClient
             .getInstance().getApolloClient();
@@ -29,6 +31,10 @@ public class Login {
             .enqueue(new ApolloCall.Callback<ProfileQuery.Data>() {
               @Override
               public void onResponse(@NotNull Response<ProfileQuery.Data> response) {
+                List<ProfileQuery.Profile> profile = response.data().profile();
+                if (profile.isEmpty()) {
+                  createProfile();
+                }
                 Log.i("LoginController", "Fetch profile called: " + response.data());
               }
 
