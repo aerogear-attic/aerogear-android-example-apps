@@ -18,14 +18,14 @@ import com.github.nitrico.lastadapter.LastAdapter;
 
 import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.R;
-import org.aerogear.android.app.memeolist.graphql.ListMemesQuery;
-import org.aerogear.android.app.memeolist.graphql.NewMemeCreatedSubscription;
+import org.aerogear.android.app.memeolist.SyncClient;
+import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
+import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Requester;
 import org.aerogear.mobile.core.reactive.Responder;
-import org.aerogear.mobile.sync.SyncService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,108 +36,108 @@ import butterknife.OnClick;
 
 public class MemeListActivity extends AppCompatActivity {
 
-    @BindView(R.id.memes)
-    RecyclerView mMemes;
+  @BindView(R.id.memes)
+  RecyclerView mMemes;
 
-    @BindView(R.id.swipe)
-    SwipeRefreshLayout mSwipe;
+  @BindView(R.id.swipe)
+  SwipeRefreshLayout mSwipe;
 
-    private ObservableList<Meme> memes = new ObservableArrayList<>();
+  private ObservableList<Meme> memes = new ObservableArrayList<>();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_meme_list);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_meme_list);
 
-        ButterKnife.bind(this);
+    ButterKnife.bind(this);
 
-        mMemes.setLayoutManager(new LinearLayoutManager(this));
-        new LastAdapter(memes, BR.meme)
-                .map(Meme.class, R.layout.item_meme)
-                .into(mMemes);
+    mMemes.setLayoutManager(new LinearLayoutManager(this));
+    new LastAdapter(memes, BR.meme)
+            .map(Meme.class, R.layout.item_meme)
+            .into(mMemes);
 
-        mSwipe.setOnRefreshListener(this::retrieveMemes);
+    mSwipe.setOnRefreshListener(this::retrieveMemes);
 
-        subscribeMemes();
-        retrieveMemes();
-    }
+    subscribeMemes();
+    retrieveMemes();
+  }
 
-    private void subscribeMemes() {
+  private void subscribeMemes() {
 
-        SyncService.getInstance().subscribe(new NewMemeCreatedSubscription())
-                .execute(NewMemeCreatedSubscription.Data.class)
-                .respondOn(new AppExecutors().mainThread())
-                .requestMap(response -> {
-                    NewMemeCreatedSubscription.Node node = response.data().Meme().node();
-                    Meme newMeme = new Meme(node.id(), node.photoUrl());
-                    return Requester.emit(newMeme);
-                })
-                .respondWith(new Responder<Meme>() {
-                    @Override
-                    public void onResult(Meme meme) {
-                        memes.add(0, meme);
-                        mMemes.smoothScrollToPosition(0);
-                    }
+    SyncClient.getInstance().subscribe(new MemeAddedSubscription())
+            .execute(MemeAddedSubscription.Data.class)
+            .respondOn(new AppExecutors().mainThread())
+            .requestMap(response -> {
+              MemeAddedSubscription.MemeAdded node = response.data().memeAdded();
+              Meme newMeme = new Meme(node.id(), node.photourl());
+              return Requester.emit(newMeme);
+            })
+            .respondWith(new Responder<Meme>() {
+              @Override
+              public void onResult(Meme meme) {
+                memes.add(0, meme);
+                mMemes.smoothScrollToPosition(0);
+              }
 
-                    @Override
-                    public void onException(Exception exception) {
-                        MobileCore.getLogger().error(exception.getMessage(), exception);
-                    }
-                });
+              @Override
+              public void onException(Exception exception) {
+                MobileCore.getLogger().error(exception.getMessage(), exception);
+              }
+            });
 
-    }
+  }
 
-    private void retrieveMemes() {
+  private void retrieveMemes() {
 
-        SyncService
-                .getInstance()
-                .query(ListMemesQuery.builder().build())
-                .execute(ListMemesQuery.Data.class)
-                .respondOn(new AppExecutors().mainThread())
-                .requestMap(response -> {
-                    List<Meme> memes = new ArrayList<>();
+    SyncClient
+            .getInstance()
+            .query(AllMemesQuery.builder().build())
+            .execute(AllMemesQuery.Data.class)
+            .respondOn(new AppExecutors().mainThread())
+            .requestMap(response -> {
+              List<Meme> memes = new ArrayList<>();
 
-                    for (ListMemesQuery.AllMeme meme : response.data().allMemes()) {
-                        memes.add(new Meme(meme.id(), meme.photoUrl()));
-                    }
+              for (AllMemesQuery.AllMeme meme : response.data().allMemes()) {
+                memes.add(new Meme(meme.id(), meme.photourl()));
+              }
 
-                    return Requester.emit(memes);
-                })
-                .respondWith(new Responder<List<Meme>>() {
-                    @Override
-                    public void onResult(List<Meme> memeList) {
-                        memes.clear();
-                        memes.addAll(memeList);
+              return Requester.emit(memes);
+            })
+            .respondWith(new Responder<List<Meme>>() {
+              @Override
+              public void onResult(List<Meme> memeList) {
+                memes.clear();
+                memes.addAll(memeList);
 
-                        mSwipe.setRefreshing(false);
-                    }
+                mSwipe.setRefreshing(false);
+              }
 
-                    @Override
-                    public void onException(Exception exception) {
-                        MobileCore.getLogger().error(exception.getMessage(), exception);
+              @Override
+              public void onException(Exception exception) {
+                MobileCore.getLogger().error(exception.getMessage(), exception);
 
-                        mSwipe.setRefreshing(false);
-                    }
-                });
+                mSwipe.setRefreshing(false);
+              }
+            });
 
-    }
+  }
 
-    @BindingAdapter("memeImage")
-    public static void displayMeme(ImageView imageView, Meme meme) {
-        CircularProgressDrawable placeHolder = new CircularProgressDrawable(imageView.getContext());
-        placeHolder.setStrokeWidth(5f);
-        placeHolder.setCenterRadius(30f);
-        placeHolder.start();
+  @BindingAdapter("memeImage")
+  public static void displayMeme(ImageView imageView, Meme meme) {
+    CircularProgressDrawable placeHolder = new CircularProgressDrawable(imageView.getContext());
+    placeHolder.setStrokeWidth(5f);
+    placeHolder.setCenterRadius(30f);
+    placeHolder.start();
 
-        Glide.with(imageView)
-                .load(meme.getPhotoUrl())
-                .apply(RequestOptions.placeholderOf(placeHolder))
-                .into(imageView);
-    }
+    Glide.with(imageView)
+            .load(meme.getPhotoUrl())
+            .apply(RequestOptions.placeholderOf(placeHolder))
+            .into(imageView);
+  }
 
-    @OnClick(R.id.newMeme)
-    void newMeme() {
-        startActivity(new Intent(this, MemeFormActivity.class));
-    }
+  @OnClick(R.id.newMeme)
+  void newMeme() {
+    startActivity(new Intent(this, MemeFormActivity.class));
+  }
 
 }

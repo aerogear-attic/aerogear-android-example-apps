@@ -8,9 +8,9 @@
       "id": "sync",
       "name": "sync",
       "type": "sync",
-      "url": "https://api.graph.cool/simple/v1/cjiyvc1wa40kg011846ev0ff8",
+      "url": "http://192.168.0.248:8000/graphql",
       "config": {
-        "subscription": "wss://subscriptions.us-west-2.graph.cool/v1/cjiyvc1wa40kg011846ev0ff8"
+        "subscription": "ws://192.168.0.248:8000/subscriptions"
       }
     }
   ]
