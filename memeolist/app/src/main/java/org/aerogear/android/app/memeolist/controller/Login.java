@@ -2,62 +2,59 @@ package org.aerogear.android.app.memeolist.controller;
 
 import android.util.Log;
 
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.ApolloClient;
+import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
+
 import org.aerogear.android.app.memeolist.SyncClient;
 import org.aerogear.android.app.memeolist.graphql.CreateProfileMutation;
 import org.aerogear.android.app.memeolist.graphql.ProfileQuery;
 import org.aerogear.android.app.memeolist.model.UserProfile;
-import org.aerogear.mobile.core.executor.AppExecutors;
-import org.aerogear.mobile.core.reactive.Requester;
-import org.aerogear.mobile.core.reactive.Responder;
-
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Temporary login controler used for creating user profile
+ * Temporary login controller used for creating user profile
  */
 public class Login {
 
 
   public void retrieveProfile() {
     UserProfile current = UserProfile.getCurrent();
-    SyncClient
-            .getInstance()
-            .query(ProfileQuery.builder().email(current.getEmail()).build())
-            .execute(ProfileQuery.Data.class)
-            .respondOn(new AppExecutors().mainThread())
-            .requestMap(response -> Requester.emit(response.data().profile()))
-            .respondWith(new Responder<List<ProfileQuery.Profile>>() {
+    ApolloClient apolloClient = SyncClient
+            .getInstance().getApolloClient();
+    ProfileQuery build = ProfileQuery.builder().email(current.getEmail()).build();
+    apolloClient
+            .query(build)
+            .enqueue(new ApolloCall.Callback<ProfileQuery.Data>() {
               @Override
-              public void onResult(List<ProfileQuery.Profile> value) {
-                Log.i("LoginController", "Fetch profile" + value.toString());
+              public void onResponse(@NotNull Response<ProfileQuery.Data> response) {
+                Log.i("LoginController", "Fetch profile called: " + response.data());
               }
 
               @Override
-              public void onException(Exception exception) {
+              public void onFailure(@NotNull ApolloException exception) {
                 Log.e("LoginController", "Cannot fetch profile", exception);
               }
             });
-
   }
 
 
   public void createProfile() {
     UserProfile current = UserProfile.getCurrent();
-    SyncClient
-            .getInstance()
-            .mutation(CreateProfileMutation.builder().displayname(current.getDisplayName()).email(current.getEmail()).pictureurl("").build())
-            .execute(CreateProfileMutation.Data.class)
-            .respondOn(new AppExecutors().mainThread())
-            .requestMap(response -> Requester.emit(response.data().createProfile()))
-            .respondWith(new Responder<CreateProfileMutation.CreateProfile>() {
+    ApolloClient apolloClient = SyncClient
+            .getInstance().getApolloClient();
+    apolloClient
+            .mutate(CreateProfileMutation.builder().displayname(current.getDisplayName()).email(current.getEmail()).pictureurl("").build())
+            .enqueue(new ApolloCall.Callback<CreateProfileMutation.Data>() {
               @Override
-              public void onResult(CreateProfileMutation.CreateProfile value) {
-                Log.i("LoginController", "Create profile" + value.toString());
+              public void onResponse(@NotNull Response<CreateProfileMutation.Data> response) {
+                Log.i("LoginController", "Created profile: " + response.data());
               }
 
               @Override
-              public void onException(Exception exception) {
-                Log.e("LoginController", "Cannot fetch profile", exception);
+              public void onFailure(@NotNull ApolloException exception) {
+                Log.e("LoginController", "Failed to create profile", exception);
               }
             });
 

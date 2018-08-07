@@ -25,6 +25,7 @@ import com.github.nitrico.lastadapter.LastAdapter;
 import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.SyncClient;
+import org.aerogear.android.app.memeolist.controller.Login;
 import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
 import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
 import org.aerogear.android.app.memeolist.model.Meme;
@@ -56,6 +57,8 @@ public class MemeListActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_meme_list);
+    Login login = new Login();
+    login.createProfile();
 
     ButterKnife.bind(this);
     apolloClient = SyncClient.getInstance().getApolloClient();
