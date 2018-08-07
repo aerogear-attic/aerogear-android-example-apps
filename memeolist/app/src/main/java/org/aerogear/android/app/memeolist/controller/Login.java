@@ -20,14 +20,19 @@ import java.util.List;
  */
 public class Login {
 
+    private static final String TAG = Login.class.getName();
+
+    private ApolloClient apolloClient;
+
+    public Login() {
+        apolloClient = SyncClient.getInstance().getApolloClient();
+    }
 
     public void createOrRetrieveProfile() {
-        UserProfile current = UserProfile.getCurrent();
-        ApolloClient apolloClient = SyncClient
-                .getInstance().getApolloClient();
-        ProfileQuery build = ProfileQuery.builder().email(current.getEmail()).build();
+        UserProfile userProfile = UserProfile.getCurrent();
+        ProfileQuery profileQuery = ProfileQuery.builder().email(userProfile.getEmail()).build();
         apolloClient
-                .query(build)
+                .query(profileQuery)
                 .enqueue(new ApolloCall.Callback<ProfileQuery.Data>() {
                     @Override
                     public void onResponse(@NotNull Response<ProfileQuery.Data> response) {
@@ -35,34 +40,37 @@ public class Login {
                         if (profile.isEmpty()) {
                             createProfile();
                         }
-                        Log.i("LoginController", "Fetch profile called: " + response.data());
+                        Log.i(TAG, "Fetch profile called: " + response.data());
                     }
 
                     @Override
                     public void onFailure(@NotNull ApolloException exception) {
-                        Log.e("LoginController", "Cannot fetch profile", exception);
+                        Log.e(TAG, "Cannot fetch profile", exception);
                     }
                 });
     }
 
 
     public void createProfile() {
-        UserProfile current = UserProfile.getCurrent();
-        ApolloClient apolloClient = SyncClient
-                .getInstance().getApolloClient();
+        UserProfile userProfile = UserProfile.getCurrent();
+        CreateProfileMutation createProfileMutation = CreateProfileMutation.builder()
+                .displayname(userProfile.getDisplayName())
+                .email(userProfile.getEmail())
+                .pictureurl("")
+                .build();
         apolloClient
-                .mutate(CreateProfileMutation.builder().displayname(current.getDisplayName()).email(current.getEmail()).pictureurl("").build())
+                .mutate(createProfileMutation)
                 .enqueue(new ApolloCall.Callback<CreateProfileMutation.Data>() {
                     @Override
                     public void onResponse(@NotNull Response<CreateProfileMutation.Data> response) {
-                        Log.i("LoginController", "Created profile: " + response.data());
+                        Log.i(TAG, "Created profile: " + response.data());
                     }
 
                     @Override
                     public void onFailure(@NotNull ApolloException exception) {
-                        Log.e("LoginController", "Failed to create profile", exception);
+                        Log.e(TAG, "Failed to create profile", exception);
                     }
                 });
-
     }
+
 }
