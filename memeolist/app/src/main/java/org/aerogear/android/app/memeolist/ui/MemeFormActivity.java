@@ -12,7 +12,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.ApolloClient;
+import com.apollographql.apollo.ApolloMutationCall;
 import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -28,6 +32,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -166,29 +172,29 @@ public class MemeFormActivity extends AppCompatActivity {
   }
 
   private void saveMeme(String imageUrl) {
+
+    ApolloClient apolloClient = SyncClient.getInstance().getApolloClient();
     UserProfile current = UserProfile.getCurrent();
-    SyncClient
-            .getInstance()
-            .mutation(CreateMemeMutation.builder().owner(current.getDisplayName()).ownerid(current.getId())
-                    .photourl(createMemeUrl(imageUrl)).build())
-            .execute(CreateMemeMutation.Data.class)
-            .respondOn(new AppExecutors().mainThread())
-            .respondWith(new Responder<Response<CreateMemeMutation.Data>>() {
-              @Override
-              public void onResult(Response<CreateMemeMutation.Data> value) {
-                materialDialog.dismiss();
-                displayMessage(R.string.meme_created);
-                finish();
-              }
+    CreateMemeMutation mutation = CreateMemeMutation.builder().owner(current.getDisplayName()).ownerid(current.getId())
+            .photourl(createMemeUrl(imageUrl)).build();
 
-              @Override
-              public void onException(Exception exception) {
-                materialDialog.dismiss();
-                MobileCore.getLogger().error(exception.getMessage(), exception);
-                displayMessage(exception.getMessage());
-              }
-            });
+    ApolloMutationCall<CreateMemeMutation.Data> mutate = apolloClient.mutate(mutation);
+    mutate.enqueue(new ApolloCall.Callback<CreateMemeMutation.Data>() {
+      @Override
+      public void onResponse(@Nonnull Response<CreateMemeMutation.Data> response) {
+        new AppExecutors().mainThread().submit(() -> {
+          materialDialog.dismiss();
+          displayMessage(R.string.meme_created);
+          finish();
+        });
+      }
 
+      @Override
+      public void onFailure(@Nonnull ApolloException e) {
+        materialDialog.dismiss();
+        MobileCore.getLogger().error(e.getMessage(), e);
+      }
+    });
   }
 
   private org.aerogear.mobile.core.reactive.Request<String> uploadImage() {
