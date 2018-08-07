@@ -65,6 +65,8 @@ public class MemeFormActivity extends AppCompatActivity {
 
   private File file;
 
+  private boolean useFixedMeme = true;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -151,7 +153,10 @@ public class MemeFormActivity extends AppCompatActivity {
     if (isValid()) {
 
       materialDialog.show();
-
+      if (useFixedMeme) {
+        saveMeme("https://i.imgur.com/HD5ouHo.jpg");
+        return;
+      }
       uploadImage()
               .respondOn(new AppExecutors().mainThread())
               .respondWith(new Responder<String>() {
@@ -225,8 +230,7 @@ public class MemeFormActivity extends AppCompatActivity {
   }
 
   private boolean isValid() {
-
-    if (file == null) {
+    if (!useFixedMeme && file == null) {
       new MaterialDialog.Builder(this)
               .title(R.string.meme_create_meme)
               .content(R.string.meme_need_image)

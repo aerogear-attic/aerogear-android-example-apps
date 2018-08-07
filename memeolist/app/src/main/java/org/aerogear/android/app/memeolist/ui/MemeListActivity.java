@@ -78,7 +78,6 @@ public class MemeListActivity extends AppCompatActivity {
         Meme newMeme = new Meme(node.id(), node.photourl());
         memes.add(0, newMeme);
         mMemes.smoothScrollToPosition(0);
-
       }
 
       @Override
