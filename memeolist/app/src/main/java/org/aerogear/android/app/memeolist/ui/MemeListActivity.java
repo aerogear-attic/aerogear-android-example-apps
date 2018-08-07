@@ -76,8 +76,10 @@ public class MemeListActivity extends AppCompatActivity {
       public void onResponse(@NotNull Response<MemeAddedSubscription.Data> response) {
         MemeAddedSubscription.MemeAdded node = response.data().memeAdded();
         Meme newMeme = new Meme(node.id(), node.photourl());
-        memes.add(0, newMeme);
-        mMemes.smoothScrollToPosition(0);
+        new AppExecutors().mainThread().submit(() -> {
+          memes.add(0, newMeme);
+          mMemes.smoothScrollToPosition(0);
+        });
       }
 
       @Override
