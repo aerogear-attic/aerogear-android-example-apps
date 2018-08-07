@@ -1,30 +1,16 @@
 package org.aerogear.android.app.memeolist;
 
-import static org.aerogear.mobile.core.utils.SanityCheck.nonNull;
-
-import javax.annotation.Nonnull;
-
-import org.jetbrains.annotations.NotNull;
-
-import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.ApolloClient;
-import com.apollographql.apollo.ApolloSubscriptionCall;
-import com.apollographql.apollo.api.Mutation;
-import com.apollographql.apollo.api.Operation;
-import com.apollographql.apollo.api.Query;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.api.Subscription;
-import com.apollographql.apollo.exception.ApolloException;
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport.Factory;
 
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.configuration.ServiceConfiguration;
-import org.aerogear.mobile.core.executor.AppExecutors;
-import org.aerogear.mobile.core.reactive.Request;
-import org.aerogear.mobile.core.reactive.Requester;
-import org.aerogear.mobile.core.reactive.Responder;
+
+import javax.annotation.Nonnull;
 
 import okhttp3.OkHttpClient;
+
+import static org.aerogear.mobile.core.utils.SanityCheck.nonNull;
 
 public final class SyncClient {
 
@@ -37,9 +23,9 @@ public final class SyncClient {
     public SyncClient(@Nonnull OkHttpClient okHttpClient, @Nonnull String serverUrl,
                       @Nonnull String webSocketUrl) {
         apolloClient = ApolloClient.builder().serverUrl(nonNull(serverUrl, "serverUrl"))
-                        .okHttpClient(nonNull(okHttpClient, "okHttpClient"))
-                        .subscriptionTransportFactory(new Factory(webSocketUrl, okHttpClient))
-                        .build();
+                .okHttpClient(nonNull(okHttpClient, "okHttpClient"))
+                .subscriptionTransportFactory(new Factory(webSocketUrl, okHttpClient))
+                .build();
     }
 
     public static SyncClient getInstance() {
