@@ -56,7 +56,7 @@ public class Login {
         CreateProfileMutation createProfileMutation = CreateProfileMutation.builder()
                 .displayname(userProfile.getDisplayName())
                 .email(userProfile.getEmail())
-                .pictureurl("")
+                .pictureurl(userProfile.getPictureUrl())
                 .build();
         apolloClient
                 .mutate(createProfileMutation)
