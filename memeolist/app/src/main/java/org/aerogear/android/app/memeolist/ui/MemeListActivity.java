@@ -57,10 +57,12 @@ public class MemeListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meme_list);
+
+        ButterKnife.bind(this);
+
         Login login = new Login();
         login.createOrRetrieveProfile();
 
-        ButterKnife.bind(this);
         apolloClient = SyncClient.getInstance().getApolloClient();
         mMemes.setLayoutManager(new LinearLayoutManager(this));
         new LastAdapter(memes, BR.meme)
@@ -74,26 +76,27 @@ public class MemeListActivity extends AppCompatActivity {
     }
 
     private void subscribeMemes() {
-        apolloClient.subscribe(new MemeAddedSubscription()).execute(new ApolloSubscriptionCall.Callback<MemeAddedSubscription.Data>() {
-            @Override
-            public void onResponse(@NotNull Response<MemeAddedSubscription.Data> response) {
-                MemeAddedSubscription.MemeAdded node = response.data().memeAdded();
-                Meme newMeme = new Meme(node.id(), node.photourl());
-                new AppExecutors().mainThread().submit(() -> {
-                    memes.add(0, newMeme);
-                    mMemes.smoothScrollToPosition(0);
+        apolloClient.subscribe(new MemeAddedSubscription())
+                .execute(new ApolloSubscriptionCall.Callback<MemeAddedSubscription.Data>() {
+                    @Override
+                    public void onResponse(@NotNull Response<MemeAddedSubscription.Data> response) {
+                        MemeAddedSubscription.MemeAdded node = response.data().memeAdded();
+                        Meme newMeme = new Meme(node.id(), node.photourl());
+                        new AppExecutors().mainThread().submit(() -> {
+                            memes.add(0, newMeme);
+                            mMemes.smoothScrollToPosition(0);
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull ApolloException e) {
+                        Log.e("MemeList", "error on subscription", e);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                    }
                 });
-            }
-
-            @Override
-            public void onFailure(@NotNull ApolloException e) {
-                Log.e("MemeList", "error on subscription", e);
-            }
-
-            @Override
-            public void onCompleted() {
-            }
-        });
 
     }
 
@@ -123,7 +126,6 @@ public class MemeListActivity extends AppCompatActivity {
                         mSwipe.setRefreshing(false);
                     }
                 });
-
     }
 
     @BindingAdapter("memeImage")
