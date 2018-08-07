@@ -1,27 +1,63 @@
-query listMemes {
+
+query allMemes {
   allMemes {
     id
-    photoUrl
-  }
-}
-
-mutation newMeme($url: String!) {
-  createMeme(photoUrl: $url) {
-    id
-    photoUrl
-  }
-}
-
-subscription newMemeCreated {
-  Meme(
-    filter: {
-      mutation_in: [CREATED]
-    }
-  ) {
-    mutation
-    node {
+    photourl
+    owner
+    likes
+    comments {
       id
-      photoUrl
+      comment
+      owner
     }
+  }
+}
+
+mutation createMeme($ownerid: ID!, $photourl: String!, $owner: String!) {
+  createMeme(ownerid: $ownerid, photourl: $photourl, owner: $owner) {
+      id
+      photourl
+      owner
+      likes
+  }
+}
+
+
+mutation postComment($memeid: ID!, $comment: String!, $owner: String!){
+  postComment(memeid: $memeid, comment: $comment, owner: $owner){
+      id
+      comment
+      owner
+  }
+}
+
+mutation likeMeme($memeid: ID!){
+  likeMeme(id: $memeid)
+}
+
+## Profile section
+mutation createProfile($email: String!, $displayname: String!, $pictureurl: String!) {
+  createProfile(email: $email, displayname: $displayname, pictureurl: $pictureurl) {
+    id
+    email
+    displayname
+    pictureurl
+  }
+}
+
+query profile($email: String!) {
+  profile(email:$email){
+    id
+    email
+    displayname
+    pictureurl
+  }
+}
+
+subscription memeAdded {
+  memeAdded {
+    id
+    photourl
+    likes
   }
 }

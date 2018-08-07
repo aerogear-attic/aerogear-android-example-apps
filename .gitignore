@@ -8,3 +8,10 @@
 /build
 /captures
 .externalNativeBuild
+memeolist/.idea/
+memeolist/.settings
+memeolist/app/.settings
+memeolist/local.properties
+memeolist/app/.classpath
+.idea/vcs.xml
+.idea/misc.xml

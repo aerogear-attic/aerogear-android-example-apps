@@ -12,21 +12,28 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.ApolloClient;
+import com.apollographql.apollo.ApolloMutationCall;
 import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.aerogear.android.app.memeolist.R;
-import org.aerogear.android.app.memeolist.graphql.NewMemeMutation;
+import org.aerogear.android.app.memeolist.SyncClient;
+import org.aerogear.android.app.memeolist.graphql.CreateMemeMutation;
+import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Requester;
 import org.aerogear.mobile.core.reactive.Responder;
-import org.aerogear.mobile.sync.SyncService;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,6 +64,8 @@ public class MemeFormActivity extends AppCompatActivity {
     private MaterialDialog materialDialog;
 
     private File file;
+
+    private boolean useFixedMeme = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +153,10 @@ public class MemeFormActivity extends AppCompatActivity {
         if (isValid()) {
 
             materialDialog.show();
-
+            if (useFixedMeme) {
+                saveMeme("https://i.imgur.com/HD5ouHo.jpg");
+                return;
+            }
             uploadImage()
                     .respondOn(new AppExecutors().mainThread())
                     .respondWith(new Responder<String>() {
@@ -166,27 +178,28 @@ public class MemeFormActivity extends AppCompatActivity {
 
     private void saveMeme(String imageUrl) {
 
-        SyncService
-                .getInstance()
-                .mutation(NewMemeMutation.builder().url(createMemeUrl(imageUrl)).build())
-                .execute(NewMemeMutation.Data.class)
-                .respondOn(new AppExecutors().mainThread())
-                .respondWith(new Responder<Response<NewMemeMutation.Data>>() {
-                    @Override
-                    public void onResult(Response<NewMemeMutation.Data> value) {
-                        materialDialog.dismiss();
-                        displayMessage(R.string.meme_created);
-                        finish();
-                    }
+        ApolloClient apolloClient = SyncClient.getInstance().getApolloClient();
+        UserProfile current = UserProfile.getCurrent();
+        CreateMemeMutation mutation = CreateMemeMutation.builder().owner(current.getDisplayName()).ownerid(current.getId())
+                .photourl(createMemeUrl(imageUrl)).build();
 
-                    @Override
-                    public void onException(Exception exception) {
-                        materialDialog.dismiss();
-                        MobileCore.getLogger().error(exception.getMessage(), exception);
-                        displayMessage(exception.getMessage());
-                    }
+        ApolloMutationCall<CreateMemeMutation.Data> mutate = apolloClient.mutate(mutation);
+        mutate.enqueue(new ApolloCall.Callback<CreateMemeMutation.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<CreateMemeMutation.Data> response) {
+                new AppExecutors().mainThread().submit(() -> {
+                    materialDialog.dismiss();
+                    displayMessage(R.string.meme_created);
+                    finish();
                 });
+            }
 
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                materialDialog.dismiss();
+                MobileCore.getLogger().error(e.getMessage(), e);
+            }
+        });
     }
 
     private org.aerogear.mobile.core.reactive.Request<String> uploadImage() {
@@ -217,8 +230,7 @@ public class MemeFormActivity extends AppCompatActivity {
     }
 
     private boolean isValid() {
-
-        if (file == null) {
+        if (!useFixedMeme && file == null) {
             new MaterialDialog.Builder(this)
                     .title(R.string.meme_create_meme)
                     .content(R.string.meme_need_image)
