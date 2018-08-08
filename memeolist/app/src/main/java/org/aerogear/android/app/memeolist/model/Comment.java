@@ -5,22 +5,23 @@ import java.io.Serializable;
 /**
  * Meme comment
  */
-public class CommentModel implements Serializable {
+public class Comment implements Serializable {
 
     private String id;
     private String comment;
     private String owner;
     private String memeId;
 
-    public CommentModel(String owner, String comment) {
+    public Comment(String owner, String comment) {
         this.comment = comment;
         this.owner = owner;
     }
 
-    public CommentModel(String id, String comment, String owner) {
+    public Comment(String id, String comment, String owner, String memeId) {
         this.id = id;
         this.comment = comment;
         this.owner = owner;
+        this.memeId = memeId;
     }
 
     public String getOwner() {

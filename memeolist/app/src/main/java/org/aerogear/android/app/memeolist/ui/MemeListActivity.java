@@ -30,7 +30,7 @@ import org.aerogear.android.app.memeolist.controller.MemeController;
 import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
 import org.aerogear.android.app.memeolist.graphql.LikeMemeMutation;
 import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
-import org.aerogear.android.app.memeolist.model.CommentModel;
+import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
@@ -114,10 +114,9 @@ public class MemeListActivity extends AppCompatActivity {
                     List<AllMemesQuery.AllMeme> allMemes = response.data().allMemes();
                     for (AllMemesQuery.AllMeme meme : allMemes) {
                         List<AllMemesQuery.Comment> comments = meme.comments();
-                        ArrayList<CommentModel> commentsList = new ArrayList<>();
+                        ArrayList<Comment> commentsList = new ArrayList<>();
                         for (AllMemesQuery.Comment comment : comments) {
-                            CommentModel commentObj = new CommentModel(comment.id(), comment.comment(), comment.owner());
-                            commentObj.setMemeId(meme.id());
+                            Comment commentObj = new Comment(comment.id(), comment.comment(), comment.owner(), meme.id());
                             commentsList.add(commentObj);
                         }
                         Meme currentMeme = new Meme(meme.id(), meme.photourl(), commentsList);

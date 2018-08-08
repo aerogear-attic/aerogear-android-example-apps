@@ -3,8 +3,6 @@ package org.aerogear.android.app.memeolist.model;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
-import org.w3c.dom.Node;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -13,11 +11,11 @@ public class Meme extends BaseObservable implements Serializable {
 
     private String id;
     private String photoUrl;
-    private List<CommentModel> comments;
+    private List<Comment> comments;
     private long likes;
     private String owner;
 
-    public Meme(String id, String photoUrl, List<CommentModel> comments) {
+    public Meme(String id, String photoUrl, List<Comment> comments) {
         this.id = id;
         this.photoUrl = photoUrl;
         this.comments = comments;
@@ -53,11 +51,11 @@ public class Meme extends BaseObservable implements Serializable {
         return Objects.hash(id);
     }
 
-    public List<CommentModel> getComments() {
+    public List<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(List<CommentModel> comments) {
+    public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
 

@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
@@ -20,13 +19,12 @@ import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.controller.MemeController;
 import org.aerogear.android.app.memeolist.graphql.PostCommentMutation;
-import org.aerogear.android.app.memeolist.model.CommentModel;
+import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -40,7 +38,7 @@ public class CommentsFormActivity extends AppCompatActivity {
 
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ObservableList<CommentModel> commentsData = new ObservableArrayList<>();
+    private ObservableList<Comment> commentsData = new ObservableArrayList<>();
 
     @BindView(R.id.comment_text)
     TextView commentText;
@@ -69,32 +67,27 @@ public class CommentsFormActivity extends AppCompatActivity {
         commentList.setLayoutManager(mLayoutManager);
 
         new LastAdapter(commentsData, BR.comment)
-                .map(CommentModel.class, R.layout.item_comment)
+                .map(Comment.class, R.layout.item_comment)
                 .into(commentList);
-        Serializable serializableExtra = getIntent().getSerializableExtra(Meme.class.getName());
-        if (serializableExtra instanceof Meme) {
-            meme = (Meme) serializableExtra;
-            commentsData.addAll(meme.getComments());
-        } else {
-            Toast.makeText(this, "Meme is missing", Toast.LENGTH_LONG).show();
-        }
-
+        meme = (Meme) getIntent().getSerializableExtra(Meme.class.getName());
+        commentsData.addAll(meme.getComments());
         memeController = new MemeController();
     }
 
+
     @OnClick(R.id.new_comment)
     void newComment() {
-        CommentModel commentModel = new CommentModel(UserProfile.getCurrent().getDisplayName(), commentText.getText().toString());
-        commentModel.setMemeId(meme.getId());
-        commentText.setText("");
-        memeController.addComment(commentModel, new ApolloCall.Callback<PostCommentMutation.Data>() {
+        Comment comment = new Comment(UserProfile.getCurrent().getDisplayName(), commentText.getText().toString());
+        comment.setMemeId(meme.getId());
+
+        memeController.addComment(comment, new ApolloCall.Callback<PostCommentMutation.Data>() {
             @Override
             public void onResponse(@NotNull Response<PostCommentMutation.Data> response) {
                 String id = response.data().postComment().id();
                 Log.i(CommentsFormActivity.class.toString(), "Comment created: " + id);
-                commentModel.setId(response.data().postComment().id());
+                comment.setId(response.data().postComment().id());
                 new AppExecutors().mainThread().submit(() -> {
-                    commentsData.add(commentModel);
+                    commentsData.add(comment);
                 });
             }
 
@@ -104,6 +97,7 @@ public class CommentsFormActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 }

@@ -9,7 +9,7 @@ import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
 import org.aerogear.android.app.memeolist.graphql.LikeMemeMutation;
 import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
 import org.aerogear.android.app.memeolist.graphql.PostCommentMutation;
-import org.aerogear.android.app.memeolist.model.CommentModel;
+import org.aerogear.android.app.memeolist.model.Comment;
 
 /**
  * Controller for meme operations
@@ -40,7 +40,7 @@ public class MemeController {
                 .enqueue(callback);
     }
 
-    public void addComment(CommentModel comment, ApolloCall.Callback<PostCommentMutation.Data> callback) {
+    public void addComment(Comment comment, ApolloCall.Callback<PostCommentMutation.Data> callback) {
         PostCommentMutation build = PostCommentMutation.builder().
                 comment(comment.getComment()).
                 owner(comment.getOwner()).

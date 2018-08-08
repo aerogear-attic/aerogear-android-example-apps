@@ -8,9 +8,9 @@
       "id": "sync",
       "name": "sync",
       "type": "sync",
-      "url": "http://192.168.0.248:8000/graphql",
+      "url": "http://10.32.241.221:8000/graphql",
       "config": {
-        "subscription": "ws://192.168.0.248:8000/subscriptions"
+        "subscription": "ws://10.32.241.221:8000/subscriptions"
       }
     }
   ]
