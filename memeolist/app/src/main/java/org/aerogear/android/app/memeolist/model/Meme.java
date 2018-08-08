@@ -1,15 +1,26 @@
 package org.aerogear.android.app.memeolist.model;
 
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
+
+import org.w3c.dom.Node;
+
+import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
-public class Meme {
+public class Meme extends BaseObservable implements Serializable {
 
     private String id;
     private String photoUrl;
+    private List<CommentModel> comments;
+    private long likes;
+    private String owner;
 
-    public Meme(String id, String photoUrl) {
+    public Meme(String id, String photoUrl, List<CommentModel> comments) {
         this.id = id;
         this.photoUrl = photoUrl;
+        this.comments = comments;
     }
 
     public String getId() {
@@ -40,6 +51,32 @@ public class Meme {
     public int hashCode() {
 
         return Objects.hash(id);
+    }
+
+    public List<CommentModel> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentModel> comments) {
+        this.comments = comments;
+    }
+
+
+    public void setLikes(long likes) {
+        this.likes = likes;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    @Bindable
+    public long getLikes() {
+        return likes;
     }
 
 }

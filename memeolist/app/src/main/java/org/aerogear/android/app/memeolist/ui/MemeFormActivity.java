@@ -65,7 +65,7 @@ public class MemeFormActivity extends AppCompatActivity {
 
     private File file;
 
-    private boolean useFixedMeme = false;
+    private boolean useFixedMeme = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -263,6 +263,9 @@ public class MemeFormActivity extends AppCompatActivity {
     }
 
     private String createMemeUrl(String imageUrl) {
+        if (useFixedMeme) {
+            return imageUrl;
+        }
         String text = mTopText.getText().toString() + "/" + mBottomText.getText().toString();
 
         if (mBottomText.getText().toString().isEmpty()) {
