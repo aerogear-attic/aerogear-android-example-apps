@@ -7,8 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
@@ -76,7 +78,7 @@ public class CommentsFormActivity extends AppCompatActivity {
 
 
     @OnClick(R.id.new_comment)
-    void newComment() {
+    void newComment(View view) {
         Comment comment = new Comment(UserProfile.getCurrent().getDisplayName(), commentText.getText().toString());
         comment.setMemeId(meme.getId());
 
@@ -94,6 +96,7 @@ public class CommentsFormActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NotNull ApolloException e) {
                 Log.e(CommentsFormActivity.class.toString(), "Error when creating comments", e);
+                Toast.makeText(view.getContext(), R.string.comment_create_error, Toast.LENGTH_LONG).show();
             }
         });
     }

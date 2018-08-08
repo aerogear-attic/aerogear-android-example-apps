@@ -18,4 +18,5 @@
     <string name="failed_to_like">Failed to like meme!</string>
     <string name="add_comment">Add Comment</string>
     <string name="comments">Comments</string>
+    <string name="comment_create_error">Cannot create comment</string>
 </resources>
