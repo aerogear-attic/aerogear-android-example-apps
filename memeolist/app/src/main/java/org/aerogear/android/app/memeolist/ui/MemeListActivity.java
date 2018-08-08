@@ -116,7 +116,7 @@ public class MemeListActivity extends AppCompatActivity {
                         List<AllMemesQuery.Comment> comments = meme.comments();
                         ArrayList<CommentModel> commentsList = new ArrayList<>();
                         for (AllMemesQuery.Comment comment : comments) {
-                            CommentModel commentObj = new CommentModel(comment.id(), comment.owner(), comment.comment());
+                            CommentModel commentObj = new CommentModel(comment.id(), comment.comment(), comment.owner());
                             commentObj.setMemeId(meme.id());
                             commentsList.add(commentObj);
                         }

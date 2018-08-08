@@ -79,7 +79,6 @@ public class CommentsFormActivity extends AppCompatActivity {
             Toast.makeText(this, "Meme is missing", Toast.LENGTH_LONG).show();
         }
 
-        // specify an adapter (see also next example)
         memeController = new MemeController();
     }
 
@@ -87,6 +86,7 @@ public class CommentsFormActivity extends AppCompatActivity {
     void newComment() {
         CommentModel commentModel = new CommentModel(UserProfile.getCurrent().getDisplayName(), commentText.getText().toString());
         commentModel.setMemeId(meme.getId());
+        commentText.setText("");
         memeController.addComment(commentModel, new ApolloCall.Callback<PostCommentMutation.Data>() {
             @Override
             public void onResponse(@NotNull Response<PostCommentMutation.Data> response) {
