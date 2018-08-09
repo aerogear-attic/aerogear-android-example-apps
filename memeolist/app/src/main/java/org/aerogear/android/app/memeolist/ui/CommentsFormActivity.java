@@ -3,12 +3,10 @@ package org.aerogear.android.app.memeolist.ui;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.ApolloClient;
@@ -33,15 +31,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CommentsFormActivity extends AppCompatActivity {
+public class CommentsFormActivity extends BaseActivity {
 
     @BindView(R.id.comment_text)
     TextView commentText;
 
     @BindView(R.id.comments_list)
     RecyclerView commentList;
-
-    private static final String TAG = CommentsFormActivity.class.getName();
 
     private ObservableList<Comment> comments = new ObservableArrayList<>();
     private ApolloClient apolloClient;
@@ -102,8 +98,7 @@ public class CommentsFormActivity extends AppCompatActivity {
                     public void onFailure(@NotNull ApolloException e) {
                         MobileCore.getLogger().error(e.getMessage(), e);
                         new AppExecutors().mainThread().submit(() ->
-                                Toast.makeText(view.getContext(),
-                                        R.string.comment_create_error, Toast.LENGTH_LONG).show());
+                                displayError(R.string.comment_create_error));
                     }
                 });
     }

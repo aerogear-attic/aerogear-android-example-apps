@@ -7,13 +7,10 @@ import android.databinding.ObservableList;
 import android.os.Bundle;
 import android.support.v4.widget.CircularProgressDrawable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.ApolloClient;
@@ -35,6 +32,7 @@ import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.android.app.memeolist.sdk.SyncClient;
+import org.aerogear.android.app.memeolist.util.MessageHelper;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.jetbrains.annotations.NotNull;
@@ -48,15 +46,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MemeListActivity extends AppCompatActivity {
+public class MemeListActivity extends BaseActivity {
 
     @BindView(R.id.memes)
     RecyclerView mMemes;
 
     @BindView(R.id.swipe)
     SwipeRefreshLayout mSwipe;
-
-    private static final String TAG = MemeListActivity.class.getName();
 
     private ApolloClient apolloClient;
     private ObservableList<Meme> memes = new ObservableArrayList<>();
@@ -95,8 +91,6 @@ public class MemeListActivity extends AppCompatActivity {
                 .enqueue(new ApolloCall.Callback<ProfileQuery.Data>() {
                     @Override
                     public void onResponse(@NotNull Response<ProfileQuery.Data> response) {
-                        Log.i(TAG, "Fetch profile called: " + response.data());
-
                         List<ProfileQuery.Profile> profile = response.data().profile();
                         if (profile.isEmpty()) {
                             createProfile();
@@ -104,8 +98,9 @@ public class MemeListActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(@NotNull ApolloException exception) {
-                        Log.e(TAG, "Cannot fetch profile", exception);
+                    public void onFailure(@NotNull ApolloException e) {
+                        MobileCore.getLogger().error(e.getMessage(), e);
+                        displayError(R.string.profile_cannot_fetch);
                     }
                 });
     }
@@ -124,12 +119,13 @@ public class MemeListActivity extends AppCompatActivity {
                 .enqueue(new ApolloCall.Callback<CreateProfileMutation.Data>() {
                     @Override
                     public void onResponse(@NotNull Response<CreateProfileMutation.Data> response) {
-                        Log.i(TAG, "Created profile: " + response.data());
+                        MobileCore.getLogger().info(getString(R.string.profile_created));
                     }
 
                     @Override
-                    public void onFailure(@NotNull ApolloException exception) {
-                        Log.e(TAG, "Failed to create profile", exception);
+                    public void onFailure(@NotNull ApolloException e) {
+                        MobileCore.getLogger().error(e.getMessage(), e);
+                        displayError(R.string.profile_create_fail);
                     }
                 });
     }
@@ -149,7 +145,8 @@ public class MemeListActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(@NotNull ApolloException e) {
-                        Log.e("MemeList", "error on subscription", e);
+                        MobileCore.getLogger().error(e.getMessage(), e);
+
                     }
 
                     @Override
@@ -232,16 +229,16 @@ public class MemeListActivity extends AppCompatActivity {
                         public void onResponse(@NotNull Response<LikeMemeMutation.Data> response) {
                             meme.setLikes(meme.getLikes() + 1);
                             new AppExecutors().mainThread().submit(() -> {
-                                Toast.makeText(view.getContext(),
-                                        R.string.meme_liked, Toast.LENGTH_LONG).show();
+                                new MessageHelper(view.getContext())
+                                        .displayMessage(R.string.meme_liked);
                             });
                         }
 
                         @Override
                         public void onFailure(@NotNull ApolloException e) {
                             new AppExecutors().mainThread().submit(() -> {
-                                Toast.makeText(view.getContext(),
-                                        R.string.failed_to_like, Toast.LENGTH_LONG).show();
+                                new MessageHelper(view.getContext())
+                                        .displayError(R.string.failed_to_like);
                             });
                         }
                     });

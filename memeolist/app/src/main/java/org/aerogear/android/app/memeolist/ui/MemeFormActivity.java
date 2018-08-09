@@ -43,7 +43,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class MemeFormActivity extends AppCompatActivity {
+public class MemeFormActivity extends BaseActivity {
 
     @BindView(R.id.meme)
     ImageView mMemeImage;
@@ -135,7 +135,7 @@ public class MemeFormActivity extends AppCompatActivity {
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
                 MobileCore.getLogger().error(error.getMessage(), error);
-                displayMessage(R.string.error_gettting_image);
+                displayError(R.string.error_gettting_image);
             }
         }
     }
@@ -170,7 +170,7 @@ public class MemeFormActivity extends AppCompatActivity {
                         public void onException(Exception exception) {
                             progress.dismiss();
                             MobileCore.getLogger().error(exception.getMessage(), exception);
-                            displayMessage(R.string.error_upload);
+                            displayError(R.string.error_upload);
                         }
                     });
 
@@ -201,6 +201,7 @@ public class MemeFormActivity extends AppCompatActivity {
                     public void onFailure(@Nonnull ApolloException e) {
                         MobileCore.getLogger().error(e.getMessage(), e);
                         progress.dismiss();
+                        displayError(getString(R.string.meme_error_mutation));
                     }
                 });
     }
@@ -255,14 +256,6 @@ public class MemeFormActivity extends AppCompatActivity {
 
         return true;
 
-    }
-
-    private void displayMessage(@StringRes int resId) {
-        displayMessage(getString(resId));
-    }
-
-    private void displayMessage(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     private String createMemeUrl(String imageUrl) {
