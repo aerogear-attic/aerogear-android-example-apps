@@ -19,6 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.CommentsFormActivity" />
         <activity android:name=".ui.MemeFormActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"

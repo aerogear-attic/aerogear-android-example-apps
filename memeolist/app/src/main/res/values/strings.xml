@@ -14,4 +14,9 @@
     <string name="creating_meme">Creating meme</string>
     <string name="please_wait">Please wait...</string>
     <string name="meme_created">Meme created</string>
+    <string name="meme_liked">Meme liked!</string>
+    <string name="failed_to_like">Failed to like meme!</string>
+    <string name="add_comment">Add Comment</string>
+    <string name="comments">Comments</string>
+    <string name="comment_create_error">Cannot create comment</string>
 </resources>

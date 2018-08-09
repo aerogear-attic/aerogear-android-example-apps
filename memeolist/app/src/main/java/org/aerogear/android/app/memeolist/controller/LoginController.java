@@ -18,13 +18,13 @@ import java.util.List;
 /**
  * Temporary login controller used for creating user profile
  */
-public class Login {
+public class LoginController {
 
-    private static final String TAG = Login.class.getName();
+    private static final String TAG = LoginController.class.getName();
 
     private ApolloClient apolloClient;
 
-    public Login() {
+    public LoginController() {
         apolloClient = SyncClient.getInstance().getApolloClient();
     }
 

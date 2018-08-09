@@ -7,6 +7,8 @@
         <variable
             name="meme"
             type="org.aerogear.android.app.memeolist.model.Meme" />
+        <import
+            type="org.aerogear.android.app.memeolist.ui.MemeListActivity.MemeHandler"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -43,7 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/meme_user_margin_start"
-                    android:text="@string/app_name"
+                    android:text="@{meme.owner}"
                     android:textColor="@color/colorAccent"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/avatar"
@@ -94,13 +96,14 @@
                     android:src="@drawable/ic_favorite"
                     android:tint="@color/colorAccent"
                     app:layout_constraintTop_toBottomOf="@id/meme" />
-
+                <!--android:text="@{String.join(Long.toString(meme.likes), ` Likes`)}"-->
                 <TextView
                     android:id="@+id/likes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
-                    android:text="182,465 likes"
+
+                    android:text="@{Long.toString(meme.likes)}"
                     android:textColor="@color/colorAccent"
                     app:layout_constraintBottom_toBottomOf="@id/likesIcon"
                     app:layout_constraintStart_toEndOf="@id/likesIcon"
@@ -111,8 +114,10 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_marginEnd="10dp"
+                    android:clickable="true"
                     android:src="@drawable/ic_favorite_border"
                     android:tint="@color/gray"
+                    android:onClick="@{(v) -> MemeHandler.like(v, meme)}"
                     app:layout_constraintBottom_toBottomOf="@id/comments"
                     app:layout_constraintEnd_toStartOf="@id/comments"
                     app:layout_constraintTop_toTopOf="@id/comments" />
@@ -121,9 +126,10 @@
                     android:id="@+id/comments"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginStart="20dp"
+                    android:clickable="true"
                     android:src="@drawable/ic_chat_bubble_outline"
                     android:tint="@color/gray"
+                    android:onClick="@{(v) -> MemeHandler.newComment(v, meme)}"
                     app:layout_constraintBottom_toBottomOf="@id/likesIcon"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/likesIcon" />
