@@ -14,16 +14,15 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.ApolloClient;
-import com.apollographql.apollo.ApolloMutationCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.aerogear.android.app.memeolist.R;
-import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.android.app.memeolist.graphql.CreateMemeMutation;
 import org.aerogear.android.app.memeolist.model.UserProfile;
+import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Requester;
@@ -61,10 +60,9 @@ public class MemeFormActivity extends AppCompatActivity {
     @BindView(R.id.bottomTextPreview)
     TextView mBottomTextPreview;
 
-    private MaterialDialog materialDialog;
-
+    private ApolloClient apolloClient;
+    private MaterialDialog progress;
     private File file;
-
     private boolean useFixedMeme = true;
 
     @Override
@@ -75,6 +73,8 @@ public class MemeFormActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        apolloClient = SyncClient.getInstance().getApolloClient();
 
         mTopText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -106,7 +106,7 @@ public class MemeFormActivity extends AppCompatActivity {
             }
         });
 
-        materialDialog = new MaterialDialog.Builder(this)
+        progress = new MaterialDialog.Builder(this)
                 .title(R.string.creating_meme)
                 .content(R.string.please_wait)
                 .progress(true, 0)
@@ -151,12 +151,13 @@ public class MemeFormActivity extends AppCompatActivity {
     @OnClick(R.id.send)
     void send() {
         if (isValid()) {
+            progress.show();
 
-            materialDialog.show();
             if (useFixedMeme) {
                 saveMeme("https://i.imgur.com/HD5ouHo.jpg");
                 return;
             }
+
             uploadImage()
                     .respondOn(new AppExecutors().mainThread())
                     .respondWith(new Responder<String>() {
@@ -167,7 +168,7 @@ public class MemeFormActivity extends AppCompatActivity {
 
                         @Override
                         public void onException(Exception exception) {
-                            materialDialog.dismiss();
+                            progress.dismiss();
                             MobileCore.getLogger().error(exception.getMessage(), exception);
                             displayMessage(R.string.error_upload);
                         }
@@ -177,29 +178,31 @@ public class MemeFormActivity extends AppCompatActivity {
     }
 
     private void saveMeme(String imageUrl) {
-
-        ApolloClient apolloClient = SyncClient.getInstance().getApolloClient();
         UserProfile current = UserProfile.getCurrent();
-        CreateMemeMutation mutation = CreateMemeMutation.builder().owner(current.getDisplayName()).ownerid(current.getId())
-                .photourl(createMemeUrl(imageUrl)).build();
 
-        ApolloMutationCall<CreateMemeMutation.Data> mutate = apolloClient.mutate(mutation);
-        mutate.enqueue(new ApolloCall.Callback<CreateMemeMutation.Data>() {
-            @Override
-            public void onResponse(@Nonnull Response<CreateMemeMutation.Data> response) {
-                new AppExecutors().mainThread().submit(() -> {
-                    materialDialog.dismiss();
-                    displayMessage(R.string.meme_created);
-                    finish();
+        CreateMemeMutation mutation = CreateMemeMutation.builder()
+                .owner(current.getDisplayName())
+                .ownerid(current.getId())
+                .photourl(createMemeUrl(imageUrl))
+                .build();
+
+        apolloClient.mutate(mutation)
+                .enqueue(new ApolloCall.Callback<CreateMemeMutation.Data>() {
+                    @Override
+                    public void onResponse(@Nonnull Response<CreateMemeMutation.Data> response) {
+                        new AppExecutors().mainThread().submit(() -> {
+                            progress.dismiss();
+                            displayMessage(R.string.meme_created);
+                            finish();
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(@Nonnull ApolloException e) {
+                        MobileCore.getLogger().error(e.getMessage(), e);
+                        progress.dismiss();
+                    }
                 });
-            }
-
-            @Override
-            public void onFailure(@Nonnull ApolloException e) {
-                materialDialog.dismiss();
-                MobileCore.getLogger().error(e.getMessage(), e);
-            }
-        });
     }
 
     private org.aerogear.mobile.core.reactive.Request<String> uploadImage() {
