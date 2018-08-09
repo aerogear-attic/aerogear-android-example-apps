@@ -1,4 +1,4 @@
-package org.aerogear.android.app.memeolist;
+package org.aerogear.android.app.memeolist.sdk;
 
 import com.apollographql.apollo.ApolloClient;
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport.Factory;
@@ -20,12 +20,13 @@ public final class SyncClient {
 
     private final ApolloClient apolloClient;
 
-    public SyncClient(@Nonnull OkHttpClient okHttpClient, @Nonnull String serverUrl,
+    public SyncClient(QueryStoreWrapper queryStoreWrapper, @Nonnull OkHttpClient okHttpClient, @Nonnull String serverUrl,
                       @Nonnull String webSocketUrl) {
-        apolloClient = ApolloClient.builder().serverUrl(nonNull(serverUrl, "serverUrl"))
+        ApolloClient.Builder builder = ApolloClient.builder().serverUrl(nonNull(serverUrl, "serverUrl"))
                 .okHttpClient(nonNull(okHttpClient, "okHttpClient"))
-                .subscriptionTransportFactory(new Factory(webSocketUrl, okHttpClient))
-                .build();
+                .subscriptionTransportFactory(new Factory(webSocketUrl, okHttpClient));
+        queryStoreWrapper.create(builder, "memeo", "id");
+        apolloClient = builder.build();
     }
 
     public static SyncClient getInstance() {
@@ -34,8 +35,9 @@ public final class SyncClient {
             ServiceConfiguration configuration = mobileCore.getServiceConfigurationByType(TYPE);
             String serverUrl = configuration.getUrl();
             String webSocketUrl = configuration.getProperty("subscription");
+            QueryStoreWrapper queryStoreWrapper = new QueryStoreWrapper(mobileCore.getContext());
             OkHttpClient okHttpClient = mobileCore.getHttpLayer().getClient();
-            SyncClient.instance = new SyncClient(okHttpClient, serverUrl, webSocketUrl);
+            SyncClient.instance = new SyncClient(queryStoreWrapper, okHttpClient, serverUrl, webSocketUrl);
         }
         return instance;
     }

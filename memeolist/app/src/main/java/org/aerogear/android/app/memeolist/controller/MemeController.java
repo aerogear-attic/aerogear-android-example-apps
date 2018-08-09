@@ -4,7 +4,7 @@ import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.ApolloClient;
 import com.apollographql.apollo.ApolloSubscriptionCall;
 
-import org.aerogear.android.app.memeolist.SyncClient;
+import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
 import org.aerogear.android.app.memeolist.graphql.LikeMemeMutation;
 import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;

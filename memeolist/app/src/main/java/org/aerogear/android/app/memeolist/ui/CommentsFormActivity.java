@@ -96,7 +96,9 @@ public class CommentsFormActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NotNull ApolloException e) {
                 Log.e(CommentsFormActivity.class.toString(), "Error when creating comments", e);
-                Toast.makeText(view.getContext(), R.string.comment_create_error, Toast.LENGTH_LONG).show();
+                new AppExecutors().mainThread().submit(() -> {
+                    Toast.makeText(view.getContext(), R.string.comment_create_error, Toast.LENGTH_LONG).show();
+                });
             }
         });
     }
