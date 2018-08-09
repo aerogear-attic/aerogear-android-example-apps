@@ -45,6 +45,7 @@ dependencies {
     implementation "org.aerogear:android-core:$aerogear_version"
     implementation "com.apollographql.apollo:apollo-runtime:1.0.0-alpha"
     implementation "com.apollographql.apollo:apollo-android-support:1.0.0-alpha"
+    implementation 'com.apollographql.apollo:apollo-http-cache:1.0.0-alpha'
 
     implementation "com.jakewharton:butterknife:$butterknife_version"
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterknife_version"

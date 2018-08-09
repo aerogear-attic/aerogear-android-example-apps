@@ -7,7 +7,7 @@ import com.apollographql.apollo.ApolloClient;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 
-import org.aerogear.android.app.memeolist.SyncClient;
+import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.android.app.memeolist.graphql.CreateProfileMutation;
 import org.aerogear.android.app.memeolist.graphql.ProfileQuery;
 import org.aerogear.android.app.memeolist.model.UserProfile;

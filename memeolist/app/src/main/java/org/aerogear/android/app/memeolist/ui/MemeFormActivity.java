@@ -21,7 +21,7 @@ import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.aerogear.android.app.memeolist.R;
-import org.aerogear.android.app.memeolist.SyncClient;
+import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.android.app.memeolist.graphql.CreateMemeMutation;
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.mobile.core.MobileCore;
