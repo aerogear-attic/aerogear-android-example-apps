@@ -7,17 +7,14 @@
         <variable
             name="meme"
             type="org.aerogear.android.app.memeolist.model.Meme" />
-        <import
-            type="org.aerogear.android.app.memeolist.ui.MemeListActivity.MemeHandler"/>
+
+        <import type="org.aerogear.android.app.memeolist.ui.MemeListActivity.MemeHandler" />
     </data>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp">
+        android:layout_margin="@dimen/memes_margin">
 
         <android.support.v7.widget.CardView
             style="@style/AppTheme.Card"
@@ -89,47 +86,44 @@
 
                 <ImageView
                     android:id="@+id/likesIcon"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
+                    android:layout_width="@dimen/meme_like_icon_width"
+                    android:layout_height="@dimen/meme_like_icon_width"
                     android:layout_marginStart="@dimen/meme_avatar_margin_start"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="@dimen/meme_like_icon_margin_top"
                     android:src="@drawable/ic_favorite"
                     android:tint="@color/colorAccent"
                     app:layout_constraintTop_toBottomOf="@id/meme" />
-                <!--android:text="@{String.join(Long.toString(meme.likes), ` Likes`)}"-->
+
                 <TextView
                     android:id="@+id/likes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
-
-                    android:text="@{Long.toString(meme.likes)}"
+                    android:layout_marginStart="@dimen/meme_likes_margin_start"
                     android:textColor="@color/colorAccent"
+                    android:text="@{@string/meme_likes(meme.likes)}"
                     app:layout_constraintBottom_toBottomOf="@id/likesIcon"
                     app:layout_constraintStart_toEndOf="@id/likesIcon"
                     app:layout_constraintTop_toTopOf="@id/likesIcon" />
 
                 <ImageView
                     android:id="@+id/like"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="10dp"
-                    android:clickable="true"
+                    android:layout_width="@dimen/meme_like_width"
+                    android:layout_height="@dimen/meme_like_width"
+                    android:layout_marginEnd="@dimen/meme_like_margin_end"
+                    android:onClick="@{(v) -> MemeHandler.like(v, meme)}"
                     android:src="@drawable/ic_favorite_border"
                     android:tint="@color/gray"
-                    android:onClick="@{(v) -> MemeHandler.like(v, meme)}"
                     app:layout_constraintBottom_toBottomOf="@id/comments"
                     app:layout_constraintEnd_toStartOf="@id/comments"
                     app:layout_constraintTop_toTopOf="@id/comments" />
 
                 <ImageView
                     android:id="@+id/comments"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:clickable="true"
+                    android:layout_width="@dimen/meme_comments_width"
+                    android:layout_height="@dimen/meme_comments_width"
+                    android:onClick="@{(v) -> MemeHandler.newComment(v, meme)}"
                     android:src="@drawable/ic_chat_bubble_outline"
                     android:tint="@color/gray"
-                    android:onClick="@{(v) -> MemeHandler.newComment(v, meme)}"
                     app:layout_constraintBottom_toBottomOf="@id/likesIcon"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/likesIcon" />

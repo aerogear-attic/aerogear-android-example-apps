@@ -23,4 +23,6 @@
     <string name="profile_created">Profile created</string>
     <string name="profile_create_fail">Failed to create profile</string>
     <string name="meme_error_mutation">An error occurred while trying to create a Meme</string>
+    <string name="meme_likes">%1$d likes</string>
 </resources>
+

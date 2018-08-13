@@ -131,7 +131,8 @@ public class MemeListActivity extends BaseActivity {
     }
 
     private void subscribeMemes() {
-        apolloClient.subscribe(new MemeAddedSubscription())
+        apolloClient
+                .subscribe(new MemeAddedSubscription())
                 .execute(new ApolloSubscriptionCall.Callback<MemeAddedSubscription.Data>() {
                     @Override
                     public void onResponse(@NotNull Response<MemeAddedSubscription.Data> response) {
