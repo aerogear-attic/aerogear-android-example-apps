@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -36,7 +37,8 @@
                     android:src="@mipmap/ic_launcher"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:ownerAvatar="@{meme}" />
+                    app:ownerAvatar="@{meme}"
+                    tools:srcCompat="@tools:sample/avatars" />
 
                 <TextView
                     android:id="@+id/user"
@@ -48,7 +50,8 @@
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/avatar"
                     app:layout_constraintStart_toEndOf="@id/avatar"
-                    app:layout_constraintTop_toTopOf="@id/avatar" />
+                    app:layout_constraintTop_toTopOf="@id/avatar"
+                    tools:text="@tools:sample/full_names" />
 
                 <ImageView
                     android:id="@+id/createdAtIcon"
@@ -83,7 +86,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/avatar"
-                    app:memeImage="@{meme}" />
+                    app:memeImage="@{meme}"
+                    tools:srcCompat="@tools:sample/backgrounds/scenic[8]" />
 
                 <ImageView
                     android:id="@+id/likesIcon"
@@ -112,7 +116,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{@string/meme_likes(meme.likes)}"
-                        android:textColor="@color/colorAccent" />
+                        android:textColor="@color/colorAccent"
+                        tools:text="128 likes" />
 
                     <TextView
                         android:layout_width="wrap_content"
