@@ -20,12 +20,11 @@ public final class SyncClient {
 
     private final ApolloClient apolloClient;
 
-    public SyncClient(QueryStoreWrapper queryStoreWrapper, @Nonnull OkHttpClient okHttpClient, @Nonnull String serverUrl,
+    public SyncClient(@Nonnull OkHttpClient okHttpClient, @Nonnull String serverUrl,
                       @Nonnull String webSocketUrl) {
         ApolloClient.Builder builder = ApolloClient.builder().serverUrl(nonNull(serverUrl, "serverUrl"))
                 .okHttpClient(nonNull(okHttpClient, "okHttpClient"))
                 .subscriptionTransportFactory(new Factory(webSocketUrl, okHttpClient));
-        queryStoreWrapper.create(builder, "memeo", "id");
         apolloClient = builder.build();
     }
 
@@ -35,9 +34,8 @@ public final class SyncClient {
             ServiceConfiguration configuration = mobileCore.getServiceConfigurationByType(TYPE);
             String serverUrl = configuration.getUrl();
             String webSocketUrl = configuration.getProperty("subscription");
-            QueryStoreWrapper queryStoreWrapper = new QueryStoreWrapper(mobileCore.getContext());
             OkHttpClient okHttpClient = mobileCore.getHttpLayer().getClient();
-            SyncClient.instance = new SyncClient(queryStoreWrapper, okHttpClient, serverUrl, webSocketUrl);
+            SyncClient.instance = new SyncClient(okHttpClient, serverUrl, webSocketUrl);
         }
         return instance;
     }
