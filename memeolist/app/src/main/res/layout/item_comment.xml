@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -12,37 +11,34 @@
     </data>
 
     <android.support.constraint.ConstraintLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/comment_item"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:background="@color/gray"
-            android:hapticFeedbackEnabled="false"
-            android:padding="10dp"
+            android:padding="@dimen/comments_comment_item_padding"
             android:text="@{comment.comment}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:backgroundTintMode="screen" />
+            tools:text="This app is awesome!" />
 
         <TextView
             android:id="@+id/comment_owner"
-            android:layout_width="366dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="9dp"
-            android:layout_marginStart="9dp"
-            android:layout_marginTop="9dp"
+            android:layout_marginBottom="@dimen/comments_comment_owner_margin"
+            android:layout_marginTop="@dimen/comments_comment_owner_margin"
             android:text="@{comment.owner}"
-            android:textAlignment="textEnd"
             android:textColor="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/comment_item" />
+            app:layout_constraintTop_toBottomOf="@+id/comment_item"
+            tools:text="AeroGear" />
+
     </android.support.constraint.ConstraintLayout>
+
 </layout>

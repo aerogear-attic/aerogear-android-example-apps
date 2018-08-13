@@ -12,15 +12,16 @@ public class Comment implements Serializable {
     private String owner;
     private String memeId;
 
-    public Comment(String owner, String comment) {
-        this.comment = comment;
+    public Comment(String owner, String comment, String memeId) {
         this.owner = owner;
+        this.comment = comment;
+        this.memeId = memeId;
     }
 
-    public Comment(String id, String comment, String owner, String memeId) {
+    public Comment(String id, String owner, String comment, String memeId) {
         this.id = id;
-        this.comment = comment;
         this.owner = owner;
+        this.comment = comment;
         this.memeId = memeId;
     }
 

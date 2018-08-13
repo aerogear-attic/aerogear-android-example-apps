@@ -6,6 +6,7 @@
     <dimen name="cardview_content_padding">10dp</dimen>
 
     <!-- Memes (List) -->
+    <dimen name="memes_margin">10dp</dimen>
     <dimen name="memes_fab_margin">16dp</dimen>
     <dimen name="meme_avatar_width">40dp</dimen>
     <dimen name="meme_avatar_margin_start">10dp</dimen>
@@ -13,6 +14,12 @@
     <dimen name="meme_created_at_icon_width">15dp</dimen>
     <dimen name="meme_created_at_icon_margin_end">2dp</dimen>
     <dimen name="meme_image_margin_top">10dp</dimen>
+    <dimen name="meme_like_icon_width">15dp</dimen>
+    <dimen name="meme_like_icon_margin_top">20dp</dimen>
+    <dimen name="meme_likes_margin_start">3dp</dimen>
+    <dimen name="meme_like_width">30dp</dimen>
+    <dimen name="meme_like_margin_end">10dp</dimen>
+    <dimen name="meme_comments_width">30dp</dimen>
 
     <!-- Meme (Form) -->
     <dimen name="meme_preview_margin">10dp</dimen>
@@ -23,5 +30,13 @@
     <dimen name="meme_preview_text_shadow">5.0</dimen>
     <dimen name="meme_preview_text_radius">5.0</dimen>
     <dimen name="meme_preview_button_height">60dp</dimen>
+
+    <!-- Comments -->
+    <dimen name="comments_padding">10dp</dimen>
+    <dimen name="comments_comments_title_text_size">24sp</dimen>
+    <dimen name="comments_comments_title_margin_top">16dp</dimen>
+    <dimen name="comments_comment_list_margin_top">10dp</dimen>
+    <dimen name="comments_comment_item_padding">10dp</dimen>
+    <dimen name="comments_comment_owner_margin">10dp</dimen>
 
 </resources>
