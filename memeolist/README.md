@@ -4,7 +4,7 @@ An example Android app for [AeroGear Sync](https://aerogear.org/sync/). Memeolis
 
 ## Backend
 
-Memolist requires [AeroGear Sync Server](https://github.com/aerogear/data-sync-server) to be running. Please follow [instructions to run server](https://github.com/aerogear/data-sync-server#memeolist---postgres) with [Memeolist Graphql schema](https://github.com/aerogear/data-sync-server/blob/master/examples/memeolist.query.graphql)
+Memolist requires [AeroGear Sync Server](https://github.com/aerogear/data-sync-server) to be running. Please follow [instructions to run server](https://github.com/aerogear/data-sync-server#memeolist---postgres). See also example queries [Memeolist Graphql queries](https://github.com/aerogear/data-sync-server/blob/master/examples/memeolist.query.graphql)
 
 ## Configuring mobile application
 
