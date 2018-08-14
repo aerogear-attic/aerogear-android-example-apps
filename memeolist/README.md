@@ -1,15 +1,11 @@
-## Memeolist AeroGear Sync Example
+# Memeolist
 
-Example application for AeroGear Sync server.
-Memeolist is a social media application for the AeroGear community where they can share funny images (memes) with each other. 
+An example Android app for [AeroGear Sync](https://aerogear.org/sync/). Memeolist is a social media app for the AeroGear community where they can share funny images (memes) with each other. 
 
-## Running backend
+## Backend
 
-Mobile application requires https://github.com/aerogear/data-sync-server to be running.
-Please follow instructions to run server with memeolist Graphql schema: 
-https://github.com/aerogear/data-sync-server#memeolist---postgres
+Memolist requires [AeroGear Sync Server](https://github.com/aerogear/data-sync-server) to be running. Please follow [instructions to run server](https://github.com/aerogear/data-sync-server#memeolist---postgres) with [Memeolist Graphql schema](https://github.com/aerogear/data-sync-server/blob/master/examples/memeolist.query.graphql)
 
 ## Configuring mobile application
 
-Mobile application is configured in `assets/mobile-services.json`.
-Please review server url before building application
+Memeolist is configured in `assets/mobile-services.json`. Please review server url before building application
