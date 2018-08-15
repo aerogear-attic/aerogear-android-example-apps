@@ -33,6 +33,7 @@ import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
+import org.aerogear.mobile.auth.AuthService;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.jetbrains.annotations.NotNull;
@@ -64,21 +65,30 @@ public class MemeListActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        apolloClient = SyncClient.getInstance().getApolloClient();
+        AuthService authService = ((MemeolistApplication) getApplication()).getAuthService();
 
-        mMemes.setLayoutManager(new LinearLayoutManager(this));
-        mMemes.setHasFixedSize(true);
+        if(authService.currentUser() == null) {
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            finish();
+        } else {
 
-        new LastAdapter(memes, BR.meme)
-                .map(Meme.class, R.layout.item_meme)
-                .into(mMemes);
+            apolloClient = SyncClient.getInstance().getApolloClient();
 
-        mSwipe.setOnRefreshListener(this::retrieveMemes);
+            mMemes.setLayoutManager(new LinearLayoutManager(this));
+            mMemes.setHasFixedSize(true);
 
-        createOrRetrieveProfile();
+            new LastAdapter(memes, BR.meme)
+                    .map(Meme.class, R.layout.item_meme)
+                    .into(mMemes);
 
-        subscribeMemes();
-        retrieveMemes();
+            mSwipe.setOnRefreshListener(this::retrieveMemes);
+
+            createOrRetrieveProfile();
+
+            subscribeMemes();
+            retrieveMemes();
+
+        }
     }
 
     public void createOrRetrieveProfile() {
