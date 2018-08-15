@@ -90,8 +90,6 @@ public class MemeListActivity extends BaseActivity {
     }
 
     public void createOrRetrieveProfile() {
-        UserProfile userProfile = new UserProfile(authService.currentUser());
-
         ProfileQuery profileQuery = ProfileQuery.builder().email(userProfile.getEmail()).build();
 
         apolloClient
@@ -114,8 +112,6 @@ public class MemeListActivity extends BaseActivity {
     }
 
     private void createProfile() {
-        UserProfile userProfile = new UserProfile(authService.currentUser());
-
         CreateProfileMutation createProfileMutation = CreateProfileMutation.builder()
                 .displayname(userProfile.getDisplayName())
                 .email(userProfile.getEmail())

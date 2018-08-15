@@ -2,13 +2,14 @@ package org.aerogear.android.app.memeolist.ui;
 
 import android.app.Application;
 
+import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.mobile.auth.AuthService;
 import org.aerogear.mobile.auth.configuration.AuthServiceConfiguration;
-import org.aerogear.mobile.core.MobileCore;
 
 public class MemeolistApplication extends Application {
 
     private AuthService authService;
+    private UserProfile userProfile;
 
     @Override
     public void onCreate() {
@@ -24,6 +25,14 @@ public class MemeolistApplication extends Application {
 
     public AuthService getAuthService() {
         return authService;
+    }
+
+    public UserProfile getUserProfile() {
+        return userProfile;
+    }
+
+    public void setUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
     }
 
 }

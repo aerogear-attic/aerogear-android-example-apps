@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import org.aerogear.android.app.memeolist.R;
+import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.mobile.auth.AuthService;
 import org.aerogear.mobile.auth.authenticator.DefaultAuthenticateOptions;
 import org.aerogear.mobile.auth.user.UserPrincipal;
@@ -17,7 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     @BindView(R.id.login)
     Button mLogin;
@@ -25,14 +26,10 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getName();
     private static final int LOGIN_RESULT_CODE = 9831;
 
-    private AuthService authService;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        authService = ((MemeolistApplication) getApplication()).getAuthService();
 
         ButterKnife.bind(this);
     }
@@ -53,7 +50,8 @@ public class LoginActivity extends AppCompatActivity {
 
         authService.login(options, new Callback<UserPrincipal>() {
             @Override
-            public void onSuccess(UserPrincipal models) {
+            public void onSuccess(UserPrincipal userPrincipal) {
+                application.setUserProfile(new UserProfile(userPrincipal));
                 startActivity(new Intent(getApplicationContext(), MemeListActivity.class));
             }
 

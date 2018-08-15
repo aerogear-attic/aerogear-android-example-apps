@@ -12,16 +12,20 @@ import org.aerogear.mobile.auth.AuthService;
 public abstract class BaseActivity extends AppCompatActivity {
 
     private MessageHelper messageHelper;
+
+    protected MemeolistApplication application;
     protected AuthService authService;
+    protected UserProfile userProfile;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MemeolistApplication application = ((MemeolistApplication) getApplication());
-
         this.messageHelper = new MessageHelper(getApplicationContext());
+
+        this.application = ((MemeolistApplication) getApplication());
         this.authService = application.getAuthService();
+        this.userProfile = application.getUserProfile();
     }
 
     public void displayError(@StringRes int resId) {

@@ -179,8 +179,6 @@ public class MemeFormActivity extends BaseActivity {
     }
 
     private void saveMeme(String imageUrl) {
-        UserProfile userProfile = new UserProfile(authService.currentUser());
-
         CreateMemeMutation mutation = CreateMemeMutation.builder()
                 .owner(userProfile.getDisplayName())
                 .ownerid(userProfile.getId())
