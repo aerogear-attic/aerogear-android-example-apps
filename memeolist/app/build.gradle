@@ -28,7 +28,7 @@ android {
 
 ext {
     android_support_version = "27.1.1"
-    aerogear_version = "1.1.0-SNAPSHOT"
+    aerogear_version = "2.0.0"
     apollo_version = "0.5.0"
     butterknife_version = "8.8.1"
     lastadapter_version = "2.3.0"
