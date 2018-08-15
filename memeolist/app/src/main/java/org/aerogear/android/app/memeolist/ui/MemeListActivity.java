@@ -65,7 +65,7 @@ public class MemeListActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        if(authService.currentUser() == null) {
+        if(!application.isLogged()) {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
             finish();
         } else {

@@ -14,7 +14,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     private MessageHelper messageHelper;
 
     protected MemeolistApplication application;
-    protected AuthService authService;
     protected UserProfile userProfile;
 
     @Override
@@ -24,7 +23,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         this.messageHelper = new MessageHelper(getApplicationContext());
 
         this.application = ((MemeolistApplication) getApplication());
-        this.authService = application.getAuthService();
         this.userProfile = application.getUserProfile();
     }
 

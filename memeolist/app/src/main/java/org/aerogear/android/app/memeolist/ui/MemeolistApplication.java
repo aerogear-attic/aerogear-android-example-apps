@@ -23,6 +23,10 @@ public class MemeolistApplication extends Application {
         authService = new AuthService(authServiceConfig);
     }
 
+    public boolean isLogged() {
+        return authService.currentUser() != null;
+    }
+
     public AuthService getAuthService() {
         return authService;
     }

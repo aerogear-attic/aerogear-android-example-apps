@@ -69,7 +69,7 @@ public class CommentsFormActivity extends BaseActivity {
     @OnClick(R.id.new_comment)
     void newComment(View view) {
         Comment comment = new Comment(
-                authService.currentUser().getName(),
+                userProfile.getDisplayName(),
                 commentText.getText().toString(),
                 meme.getId()
         );

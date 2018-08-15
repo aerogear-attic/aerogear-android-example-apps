@@ -37,7 +37,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LOGIN_RESULT_CODE) {
-            authService.handleAuthResult(data);
+            application.getAuthService().handleAuthResult(data);
         }
     }
 
@@ -48,7 +48,7 @@ public class LoginActivity extends BaseActivity {
         DefaultAuthenticateOptions options = new DefaultAuthenticateOptions(
                 this, LOGIN_RESULT_CODE);
 
-        authService.login(options, new Callback<UserPrincipal>() {
+        application.getAuthService().login(options, new Callback<UserPrincipal>() {
             @Override
             public void onSuccess(UserPrincipal userPrincipal) {
                 application.setUserProfile(new UserProfile(userPrincipal));
