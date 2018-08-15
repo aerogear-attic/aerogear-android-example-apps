@@ -2,13 +2,11 @@ package org.aerogear.android.app.memeolist.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.Toast;
 
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.model.UserProfile;
-import org.aerogear.mobile.auth.AuthService;
 import org.aerogear.mobile.auth.authenticator.DefaultAuthenticateOptions;
 import org.aerogear.mobile.auth.user.UserPrincipal;
 import org.aerogear.mobile.core.Callback;
@@ -20,11 +18,11 @@ import butterknife.OnClick;
 
 public class LoginActivity extends BaseActivity {
 
-    @BindView(R.id.login)
-    Button mLogin;
-
     private static final String TAG = LoginActivity.class.getName();
     private static final int LOGIN_RESULT_CODE = 9831;
+
+    @BindView(R.id.login)
+    Button mLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

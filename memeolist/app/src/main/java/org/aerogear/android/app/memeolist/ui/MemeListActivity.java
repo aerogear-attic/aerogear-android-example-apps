@@ -30,10 +30,8 @@ import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
 import org.aerogear.android.app.memeolist.graphql.ProfileQuery;
 import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
-import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
-import org.aerogear.mobile.auth.AuthService;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.jetbrains.annotations.NotNull;
@@ -49,14 +47,14 @@ import butterknife.OnClick;
 
 public class MemeListActivity extends BaseActivity {
 
+    private ApolloClient apolloClient;
+    private ObservableList<Meme> memes = new ObservableArrayList<>();
+    
     @BindView(R.id.memes)
     RecyclerView mMemes;
 
     @BindView(R.id.swipe)
     SwipeRefreshLayout mSwipe;
-
-    private ApolloClient apolloClient;
-    private ObservableList<Meme> memes = new ObservableArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +63,7 @@ public class MemeListActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        if(!application.isLogged()) {
+        if (!application.isLogged()) {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
             finish();
         } else {
@@ -200,6 +198,11 @@ public class MemeListActivity extends BaseActivity {
                 });
     }
 
+    @OnClick(R.id.newMeme)
+    void newMeme() {
+        startActivity(new Intent(this, MemeFormActivity.class));
+    }
+
     @BindingAdapter("memeImage")
     public static void displayMeme(ImageView imageView, Meme meme) {
         CircularProgressDrawable placeHolder = new CircularProgressDrawable(imageView.getContext());
@@ -211,11 +214,6 @@ public class MemeListActivity extends BaseActivity {
                 .load(meme.getPhotoUrl())
                 .apply(RequestOptions.placeholderOf(placeHolder))
                 .into(imageView);
-    }
-
-    @OnClick(R.id.newMeme)
-    void newMeme() {
-        startActivity(new Intent(this, MemeFormActivity.class));
     }
 
     public static class MemeHandler {
