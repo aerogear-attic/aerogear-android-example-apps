@@ -5,17 +5,23 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 
+import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
+import org.aerogear.mobile.auth.AuthService;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
     private MessageHelper messageHelper;
+    protected AuthService authService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        MemeolistApplication application = ((MemeolistApplication) getApplication());
+
         this.messageHelper = new MessageHelper(getApplicationContext());
+        this.authService = application.getAuthService();
     }
 
     public void displayError(@StringRes int resId) {

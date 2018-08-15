@@ -23,6 +23,7 @@ import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.graphql.CreateMemeMutation;
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.android.app.memeolist.sdk.SyncClient;
+import org.aerogear.mobile.auth.AuthService;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Requester;
@@ -178,11 +179,11 @@ public class MemeFormActivity extends BaseActivity {
     }
 
     private void saveMeme(String imageUrl) {
-        UserProfile current = UserProfile.getCurrent();
+        UserProfile userProfile = new UserProfile(authService.currentUser());
 
         CreateMemeMutation mutation = CreateMemeMutation.builder()
-                .owner(current.getDisplayName())
-                .ownerid(current.getId())
+                .owner(userProfile.getDisplayName())
+                .ownerid(userProfile.getId())
                 .photourl(createMemeUrl(imageUrl))
                 .build();
 

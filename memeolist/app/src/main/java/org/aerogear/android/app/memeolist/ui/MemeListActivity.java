@@ -65,8 +65,6 @@ public class MemeListActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        AuthService authService = ((MemeolistApplication) getApplication()).getAuthService();
-
         if(authService.currentUser() == null) {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
             finish();
@@ -92,7 +90,7 @@ public class MemeListActivity extends BaseActivity {
     }
 
     public void createOrRetrieveProfile() {
-        UserProfile userProfile = UserProfile.getCurrent();
+        UserProfile userProfile = new UserProfile(authService.currentUser());
 
         ProfileQuery profileQuery = ProfileQuery.builder().email(userProfile.getEmail()).build();
 
@@ -116,7 +114,7 @@ public class MemeListActivity extends BaseActivity {
     }
 
     private void createProfile() {
-        UserProfile userProfile = UserProfile.getCurrent();
+        UserProfile userProfile = new UserProfile(authService.currentUser());
 
         CreateProfileMutation createProfileMutation = CreateProfileMutation.builder()
                 .displayname(userProfile.getDisplayName())
