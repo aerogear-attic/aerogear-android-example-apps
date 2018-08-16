@@ -21,6 +21,10 @@ public class MemeolistApplication extends Application {
                 .build();
 
         authService = new AuthService(authServiceConfig);
+
+        if(authService.currentUser() != null) {
+            userProfile = new UserProfile(authService.currentUser());
+        }
     }
 
     public boolean isLogged() {
