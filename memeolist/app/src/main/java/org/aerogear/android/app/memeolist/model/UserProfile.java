@@ -7,7 +7,7 @@ import org.aerogear.mobile.auth.user.UserPrincipal;
 public class UserProfile {
 
     public UserProfile(UserPrincipal loggedUser) {
-        this.id = loggedUser.getUsername();
+        this.id = "1";
         this.displayName = loggedUser.getName();
         this.email = loggedUser.getEmail();
         this.pictureUrl = "https://randomuser.me/api/portraits/lego/1.jpg";
