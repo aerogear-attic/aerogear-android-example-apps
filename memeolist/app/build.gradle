@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = ["appAuthRedirectScheme": "org.aerogear.android.app.memeolist"]
     }
 
     dataBinding.enabled true
@@ -28,7 +29,7 @@ android {
 
 ext {
     android_support_version = "27.1.1"
-    aerogear_version = "1.1.0-SNAPSHOT"
+    aerogear_version = "2.0.0"
     apollo_version = "0.5.0"
     butterknife_version = "8.8.1"
     lastadapter_version = "2.3.0"
@@ -37,12 +38,15 @@ ext {
 
 dependencies {
     implementation "com.android.support:appcompat-v7:$android_support_version"
+    implementation "com.android.support:support-vector-drawable:$android_support_version"
+    implementation "com.android.support:customtabs:$android_support_version"
     implementation "com.android.support:recyclerview-v7:$android_support_version"
     implementation "com.android.support:cardview-v7:$android_support_version"
     implementation "com.android.support:design:$android_support_version"
     implementation "com.android.support.constraint:constraint-layout:1.1.2"
 
     implementation "org.aerogear:android-core:$aerogear_version"
+    implementation "org.aerogear:android-auth:$aerogear_version"
     implementation "com.apollographql.apollo:apollo-runtime:1.0.0-alpha"
     implementation "com.apollographql.apollo:apollo-android-support:1.0.0-alpha"
     implementation 'com.apollographql.apollo:apollo-http-cache:1.0.0-alpha'

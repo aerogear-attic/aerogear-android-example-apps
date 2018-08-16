@@ -12,6 +12,18 @@
       "config": {
         "subscription": "ws://10.32.241.221:8000/subscriptions"
       }
+    },
+    {
+      "id": "keycloak",
+      "name": "keycloak",
+      "type": "keycloak",
+      "url": "https://keycloak.security.feedhenry.org/auth",
+      "config": {
+        "auth-server-url": "https://keycloak.security.feedhenry.org/auth",
+        "realm": "Memeolist",
+        "resource": "android-app",
+        "ssl-required": "external"
+      }
     }
   ]
 }

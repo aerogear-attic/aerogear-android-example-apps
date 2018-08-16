@@ -33,6 +33,7 @@ import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
+import org.aerogear.mobile.auth.AuthService;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.jetbrains.annotations.NotNull;
@@ -64,26 +65,31 @@ public class MemeListActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        apolloClient = SyncClient.getInstance().getApolloClient();
+        if(!application.isLogged()) {
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            finish();
+        } else {
 
-        mMemes.setLayoutManager(new LinearLayoutManager(this));
-        mMemes.setHasFixedSize(true);
+            apolloClient = SyncClient.getInstance().getApolloClient();
 
-        new LastAdapter(memes, BR.meme)
-                .map(Meme.class, R.layout.item_meme)
-                .into(mMemes);
+            mMemes.setLayoutManager(new LinearLayoutManager(this));
+            mMemes.setHasFixedSize(true);
 
-        mSwipe.setOnRefreshListener(this::retrieveMemes);
+            new LastAdapter(memes, BR.meme)
+                    .map(Meme.class, R.layout.item_meme)
+                    .into(mMemes);
 
-        createOrRetrieveProfile();
+            mSwipe.setOnRefreshListener(this::retrieveMemes);
 
-        subscribeMemes();
-        retrieveMemes();
+            createOrRetrieveProfile();
+
+            subscribeMemes();
+            retrieveMemes();
+
+        }
     }
 
     public void createOrRetrieveProfile() {
-        UserProfile userProfile = UserProfile.getCurrent();
-
         ProfileQuery profileQuery = ProfileQuery.builder().email(userProfile.getEmail()).build();
 
         apolloClient
@@ -106,8 +112,6 @@ public class MemeListActivity extends BaseActivity {
     }
 
     private void createProfile() {
-        UserProfile userProfile = UserProfile.getCurrent();
-
         CreateProfileMutation createProfileMutation = CreateProfileMutation.builder()
                 .displayname(userProfile.getDisplayName())
                 .email(userProfile.getEmail())

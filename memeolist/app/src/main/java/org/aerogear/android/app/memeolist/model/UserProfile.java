@@ -1,20 +1,16 @@
 package org.aerogear.android.app.memeolist.model;
 
+import org.aerogear.mobile.auth.user.UserPrincipal;
+
 /**
  */
 public class UserProfile {
 
-    public static UserProfile defaultUserProfile = new UserProfile(
-            "1",
-            "Martin Martinski",
-            "mmartin@rodhut.com",
-            "https://randomuser.me/api/portraits/lego/1.jpg");
-
-    public UserProfile(String id, String displayName, String email, String pictureUrl) {
-        this.id = id;
-        this.displayName = displayName;
-        this.email = email;
-        this.pictureUrl = pictureUrl;
+    public UserProfile(UserPrincipal loggedUser) {
+        this.id = "1";
+        this.displayName = loggedUser.getName();
+        this.email = loggedUser.getEmail();
+        this.pictureUrl = "https://randomuser.me/api/portraits/lego/1.jpg";
     }
 
     private String id;
@@ -36,10 +32,6 @@ public class UserProfile {
 
     public String getPictureUrl() {
         return pictureUrl;
-    }
-
-    public static UserProfile getCurrent() {
-        return UserProfile.defaultUserProfile;
     }
 
 }

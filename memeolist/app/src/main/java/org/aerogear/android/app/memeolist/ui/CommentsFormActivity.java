@@ -21,6 +21,7 @@ import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.android.app.memeolist.sdk.SyncClient;
+import org.aerogear.mobile.auth.AuthService;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +69,7 @@ public class CommentsFormActivity extends BaseActivity {
     @OnClick(R.id.new_comment)
     void newComment(View view) {
         Comment comment = new Comment(
-                UserProfile.getCurrent().getDisplayName(),
+                userProfile.getDisplayName(),
                 commentText.getText().toString(),
                 meme.getId()
         );
