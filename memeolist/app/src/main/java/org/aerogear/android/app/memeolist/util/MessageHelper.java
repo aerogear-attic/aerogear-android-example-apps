@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.StringRes;
 import android.widget.Toast;
 
+import org.aerogear.mobile.core.executor.AppExecutors;
+
 public final class MessageHelper {
 
     private final Context context;
@@ -13,7 +15,9 @@ public final class MessageHelper {
     }
 
     public void displayError(@StringRes int resId) {
-        displayMessage(context.getString(resId));
+        new AppExecutors().mainThread().submit(() -> {
+            displayMessage(context.getString(resId));
+        });
     }
 
     public void displayError(String message) {
@@ -25,7 +29,9 @@ public final class MessageHelper {
     }
 
     public void displayMessage(String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        new AppExecutors().mainThread().submit(() -> {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        });
     }
 
 }

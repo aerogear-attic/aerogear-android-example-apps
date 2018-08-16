@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.model.UserProfile;
+import org.aerogear.mobile.auth.AuthService;
 import org.aerogear.mobile.auth.authenticator.DefaultAuthenticateOptions;
 import org.aerogear.mobile.auth.user.UserPrincipal;
 import org.aerogear.mobile.core.Callback;
@@ -45,10 +46,20 @@ public class LoginActivity extends BaseActivity {
 
         DefaultAuthenticateOptions options = new DefaultAuthenticateOptions(
                 this, LOGIN_RESULT_CODE);
-
         application.getAuthService().login(options, new Callback<UserPrincipal>() {
             @Override
             public void onSuccess(UserPrincipal userPrincipal) {
+                MobileCore.getInstance().getHttpInterceptorLayer().add((builder) -> {
+                    AuthService authService = application.getAuthService();
+                    UserPrincipal user = authService.currentUser();
+                    if (user != null && user.getAccessToken() != null) {
+                        String accessToken = user.getAccessToken();
+                        builder.addHeader("Authorization", "Bearer " + accessToken).build();
+                    } else {
+                        // authService.refreshToken()??
+                    }
+                    return builder;
+                });
                 application.setUserProfile(new UserProfile(userPrincipal));
                 startActivity(new Intent(getApplicationContext(), MemeListActivity.class));
             }
