@@ -7,14 +7,10 @@ import android.widget.Toast;
 
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.model.UserProfile;
-import org.aerogear.mobile.auth.AuthHeaderProvider;
-import org.aerogear.mobile.auth.AuthService;
 import org.aerogear.mobile.auth.authenticator.DefaultAuthenticateOptions;
 import org.aerogear.mobile.auth.user.UserPrincipal;
 import org.aerogear.mobile.core.Callback;
 import org.aerogear.mobile.core.MobileCore;
-
-import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,7 +35,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LOGIN_RESULT_CODE) {
-            application.getAuthService().handleAuthResult(data);
+            authService.handleAuthResult(data);
         }
     }
 
@@ -49,7 +45,8 @@ public class LoginActivity extends BaseActivity {
 
         DefaultAuthenticateOptions options = new DefaultAuthenticateOptions(
                 this, LOGIN_RESULT_CODE);
-        application.getAuthService().login(options, new Callback<UserPrincipal>() {
+
+        authService.login(options, new Callback<UserPrincipal>() {
             @Override
             public void onSuccess(UserPrincipal userPrincipal) {
                 application.setUserProfile(new UserProfile(userPrincipal));

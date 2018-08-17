@@ -32,6 +32,8 @@ import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
+import org.aerogear.mobile.auth.user.UserPrincipal;
+import org.aerogear.mobile.core.Callback;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.jetbrains.annotations.NotNull;
@@ -85,6 +87,27 @@ public class MemeListActivity extends BaseActivity {
             retrieveMemes();
 
         }
+    }
+
+    @OnClick(R.id.exit)
+    void exit() {
+        authService.logout(authService.currentUser(), new Callback<UserPrincipal>() {
+            @Override
+            public void onSuccess() {
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                MobileCore.getLogger().error(error.getMessage(), error);
+                displayMessage(R.string.error_logout);
+            }
+        });
+    }
+
+    @OnClick(R.id.newMeme)
+    void newMeme() {
+        startActivity(new Intent(getApplicationContext(), MemeFormActivity.class));
     }
 
     public void createOrRetrieveProfile() {
@@ -200,11 +223,6 @@ public class MemeListActivity extends BaseActivity {
                         mSwipe.setRefreshing(false);
                     }
                 });
-    }
-
-    @OnClick(R.id.newMeme)
-    void newMeme() {
-        startActivity(new Intent(this, MemeFormActivity.class));
     }
 
     @BindingAdapter("memeImage")

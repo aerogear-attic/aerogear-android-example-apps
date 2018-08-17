@@ -24,8 +24,6 @@ import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -49,8 +47,6 @@ public class CommentsFormActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
         apolloClient = SyncClient.getInstance().getApolloClient();
 
         commentList.setLayoutManager(new LinearLayoutManager(this));
@@ -62,6 +58,11 @@ public class CommentsFormActivity extends BaseActivity {
 
         meme = (Meme) getIntent().getSerializableExtra(Meme.class.getName());
         comments.addAll(meme.getComments());
+    }
+
+    @OnClick(R.id.back)
+    void back() {
+        finish();
     }
 
     @OnClick(R.id.new_comment)
