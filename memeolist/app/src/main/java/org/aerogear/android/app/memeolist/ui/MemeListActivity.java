@@ -152,7 +152,7 @@ public class MemeListActivity extends BaseActivity {
                     @Override
                     public void onFailure(@NotNull ApolloException e) {
                         MobileCore.getLogger().error(e.getMessage(), e);
-
+                        displayError(R.string.error_subscribe_meme_creation);
                     }
 
                     @Override
@@ -196,6 +196,7 @@ public class MemeListActivity extends BaseActivity {
                     @Override
                     public void onFailure(@Nonnull ApolloException e) {
                         MobileCore.getLogger().error(e.getMessage(), e);
+                        displayError(R.string.error_retrieve_memes);
                         mSwipe.setRefreshing(false);
                     }
                 });
