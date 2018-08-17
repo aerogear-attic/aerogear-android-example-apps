@@ -234,18 +234,14 @@ public class MemeListActivity extends BaseActivity {
                         @Override
                         public void onResponse(@NotNull Response<LikeMemeMutation.Data> response) {
                             meme.setLikes(meme.getLikes() + 1);
-                            new AppExecutors().mainThread().submit(() -> {
-                                new MessageHelper(view.getContext())
-                                        .displayMessage(R.string.meme_liked);
-                            });
+                            new MessageHelper(view.getContext())
+                                    .displayMessage(R.string.meme_liked);
                         }
 
                         @Override
                         public void onFailure(@NotNull ApolloException e) {
-                            new AppExecutors().mainThread().submit(() -> {
-                                new MessageHelper(view.getContext())
-                                        .displayError(R.string.failed_to_like);
-                            });
+                            new MessageHelper(view.getContext())
+                                    .displayError(R.string.failed_to_like);
                         }
                     });
         }
