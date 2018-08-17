@@ -89,29 +89,27 @@ public class MemeListActivity extends BaseActivity {
 
     public void createOrRetrieveProfile() {
         // TODO invalid flow/crashing app
-        if (userProfile != null && userProfile.getEmail() != null) {
-            ProfileQuery profileQuery = ProfileQuery.builder().email(userProfile.getEmail()).build();
-            apolloClient
-                    .query(profileQuery)
-                    .enqueue(new ApolloCall.Callback<ProfileQuery.Data>() {
-                        @Override
-                        public void onResponse(@NotNull Response<ProfileQuery.Data> response) {
-                            ProfileQuery.Data data = response.data();
-                            if (data != null) {
-                                List<ProfileQuery.Profile> profile = data.profile();
-                                if (profile.isEmpty()) {
-                                    createProfile();
-                                }
+        ProfileQuery profileQuery = ProfileQuery.builder().email(userProfile.getEmail()).build();
+        apolloClient
+                .query(profileQuery)
+                .enqueue(new ApolloCall.Callback<ProfileQuery.Data>() {
+                    @Override
+                    public void onResponse(@NotNull Response<ProfileQuery.Data> response) {
+                        ProfileQuery.Data data = response.data();
+                        if (data != null) {
+                            List<ProfileQuery.Profile> profile = data.profile();
+                            if (profile.isEmpty()) {
+                                createProfile();
                             }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(@NotNull ApolloException e) {
-                            MobileCore.getLogger().error(e.getMessage(), e);
-                            displayError(R.string.profile_cannot_fetch);
-                        }
-                    });
-        }
+                    @Override
+                    public void onFailure(@NotNull ApolloException e) {
+                        MobileCore.getLogger().error(e.getMessage(), e);
+                        displayError(R.string.profile_cannot_fetch);
+                    }
+                });
     }
 
     private void createProfile() {
