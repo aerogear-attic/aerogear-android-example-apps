@@ -51,6 +51,7 @@ public class LoginActivity extends BaseActivity {
             public void onSuccess(UserPrincipal userPrincipal) {
                 application.setUserProfile(new UserProfile(userPrincipal));
                 startActivity(new Intent(getApplicationContext(), MemeListActivity.class));
+                finish();
             }
 
             @Override
