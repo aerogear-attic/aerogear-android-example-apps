@@ -10,7 +10,7 @@
       "type": "sync",
       "url": "http://10.32.241.221:8000/graphql",
       "config": {
-        "subscription": "ws://10.32.241.221:8000/subscriptions"
+        "subscription": "ws://10.32.241.221:8000/graphql"
       }
     },
     {
