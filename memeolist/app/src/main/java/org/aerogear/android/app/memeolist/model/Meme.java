@@ -59,11 +59,6 @@ public class Meme extends BaseObservable implements Serializable {
         this.comments = comments;
     }
 
-
-    public void setLikes(long likes) {
-        this.likes = likes;
-    }
-
     public String getOwner() {
         return owner;
     }
@@ -75,6 +70,10 @@ public class Meme extends BaseObservable implements Serializable {
     @Bindable
     public long getLikes() {
         return likes;
+    }
+
+    public void setLikes(long likes) {
+        this.likes = likes;
     }
 
 }

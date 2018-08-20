@@ -7,14 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
-import org.aerogear.mobile.auth.AuthService;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private MessageHelper messageHelper;
-
     protected MemeolistApplication application;
     protected UserProfile userProfile;
+    private MessageHelper messageHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

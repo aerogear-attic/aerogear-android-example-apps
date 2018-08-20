@@ -5,6 +5,7 @@ import android.app.Application;
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.mobile.auth.AuthService;
 import org.aerogear.mobile.auth.configuration.AuthServiceConfiguration;
+import org.aerogear.mobile.core.MobileCore;
 
 public class MemeolistApplication extends Application {
 
@@ -22,9 +23,10 @@ public class MemeolistApplication extends Application {
 
         authService = new AuthService(authServiceConfig);
 
-        if(authService.currentUser() != null) {
+        if (authService.currentUser() != null) {
             userProfile = new UserProfile(authService.currentUser());
         }
+        MobileCore.getInstance().getHttpLayer().requestHeaderInterceptor().add(authService.getAuthHeaderProvider());
     }
 
     public boolean isLogged() {
