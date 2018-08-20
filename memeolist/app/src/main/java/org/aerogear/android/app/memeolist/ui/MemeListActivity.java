@@ -95,6 +95,7 @@ public class MemeListActivity extends BaseActivity {
             @Override
             public void onSuccess() {
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                finish();
             }
 
             @Override
