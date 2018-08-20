@@ -24,7 +24,6 @@ public class MemeolistApplication extends Application {
         authService = new AuthService(authServiceConfig);
 
         if (authService.currentUser() != null) {
-            // FIXME This is serious bug (profile should change at any time and should not be cached)
             userProfile = new UserProfile(authService.currentUser());
         }
         MobileCore.getInstance().getHttpLayer().requestHeaderInterceptor().add(authService.getAuthHeaderProvider());
