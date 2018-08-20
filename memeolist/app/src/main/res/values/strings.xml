@@ -25,6 +25,7 @@
     <string name="meme_error_mutation">An error occurred while trying to create a Meme</string>
     <string name="meme_likes">%1$d likes</string>
     <string name="exit">Exit</string>
+    <string name="error_login">Error while trying to login</string>
     <string name="error_logout">Error while trying to logout</string>
     <string name="error_retrieve_memes">Error while trying to retrieve memes</string>
     <string name="error_subscribe_meme_creation">Error while trying to subscribe meme creation</string>

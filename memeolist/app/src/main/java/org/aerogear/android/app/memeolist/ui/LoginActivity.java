@@ -3,10 +3,10 @@ package org.aerogear.android.app.memeolist.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.Toast;
 
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.model.UserProfile;
+import org.aerogear.android.app.memeolist.util.MessageHelper;
 import org.aerogear.mobile.auth.authenticator.DefaultAuthenticateOptions;
 import org.aerogear.mobile.auth.user.UserPrincipal;
 import org.aerogear.mobile.core.Callback;
@@ -58,9 +58,7 @@ public class LoginActivity extends BaseActivity {
             public void onError(Throwable error) {
                 MobileCore.getLogger().error(TAG, error.getMessage(), error);
                 mLogin.setEnabled(true);
-                Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_LONG).show();
-
+                new MessageHelper(getApplicationContext()).displayError(R.string.error_login);
             }
         });
     }
