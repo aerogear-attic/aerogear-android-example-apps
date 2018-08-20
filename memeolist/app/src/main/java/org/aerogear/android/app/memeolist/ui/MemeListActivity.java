@@ -32,6 +32,8 @@ import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
+import org.aerogear.mobile.auth.user.UserPrincipal;
+import org.aerogear.mobile.core.Callback;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.jetbrains.annotations.NotNull;
@@ -85,6 +87,28 @@ public class MemeListActivity extends BaseActivity {
             retrieveMemes();
 
         }
+    }
+
+    @OnClick(R.id.exit)
+    void exit() {
+        authService.logout(authService.currentUser(), new Callback<UserPrincipal>() {
+            @Override
+            public void onSuccess() {
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                finish();
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                MobileCore.getLogger().error(error.getMessage(), error);
+                displayMessage(R.string.error_logout);
+            }
+        });
+    }
+
+    @OnClick(R.id.newMeme)
+    void newMeme() {
+        startActivity(new Intent(getApplicationContext(), MemeFormActivity.class));
     }
 
     public void createOrRetrieveProfile() {
@@ -152,7 +176,7 @@ public class MemeListActivity extends BaseActivity {
                     @Override
                     public void onFailure(@NotNull ApolloException e) {
                         MobileCore.getLogger().error(e.getMessage(), e);
-
+                        displayError(R.string.error_subscribe_meme_creation);
                     }
 
                     @Override
@@ -196,14 +220,10 @@ public class MemeListActivity extends BaseActivity {
                     @Override
                     public void onFailure(@Nonnull ApolloException e) {
                         MobileCore.getLogger().error(e.getMessage(), e);
+                        displayError(R.string.error_retrieve_memes);
                         mSwipe.setRefreshing(false);
                     }
                 });
-    }
-
-    @OnClick(R.id.newMeme)
-    void newMeme() {
-        startActivity(new Intent(this, MemeFormActivity.class));
     }
 
     @BindingAdapter("memeImage")
@@ -234,18 +254,14 @@ public class MemeListActivity extends BaseActivity {
                         @Override
                         public void onResponse(@NotNull Response<LikeMemeMutation.Data> response) {
                             meme.setLikes(meme.getLikes() + 1);
-                            new AppExecutors().mainThread().submit(() -> {
-                                new MessageHelper(view.getContext())
-                                        .displayMessage(R.string.meme_liked);
-                            });
+                            new MessageHelper(view.getContext())
+                                    .displayMessage(R.string.meme_liked);
                         }
 
                         @Override
                         public void onFailure(@NotNull ApolloException e) {
-                            new AppExecutors().mainThread().submit(() -> {
-                                new MessageHelper(view.getContext())
-                                        .displayError(R.string.failed_to_like);
-                            });
+                            new MessageHelper(view.getContext())
+                                    .displayError(R.string.failed_to_like);
                         }
                     });
         }

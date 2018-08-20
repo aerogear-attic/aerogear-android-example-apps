@@ -68,8 +68,6 @@ public class MemeFormActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
         apolloClient = SyncClient.getInstance().getApolloClient();
 
         mTopText.addTextChangedListener(new TextWatcher() {
@@ -110,15 +108,6 @@ public class MemeFormActivity extends BaseActivity {
                 .build();
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -134,6 +123,11 @@ public class MemeFormActivity extends BaseActivity {
                 displayError(R.string.error_gettting_image);
             }
         }
+    }
+
+    @OnClick(R.id.back)
+    void back() {
+        finish();
     }
 
     @OnClick(R.id.meme)

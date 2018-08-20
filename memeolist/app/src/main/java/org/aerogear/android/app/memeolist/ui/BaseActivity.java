@@ -7,10 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
+import org.aerogear.mobile.auth.AuthService;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
     protected MemeolistApplication application;
+    protected AuthService authService;
     protected UserProfile userProfile;
     private MessageHelper messageHelper;
 
@@ -21,6 +23,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         this.messageHelper = new MessageHelper(getApplicationContext());
 
         this.application = ((MemeolistApplication) getApplication());
+        this.authService = application.getAuthService();
         this.userProfile = application.getUserProfile();
     }
 

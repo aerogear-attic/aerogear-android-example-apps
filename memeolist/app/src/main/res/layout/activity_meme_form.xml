@@ -3,30 +3,66 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/meme_preview_margin">
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/AppTheme.Toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                style="@style/AppTheme.Toolbar.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/back"
+                style="@style/AppTheme.Toolbar.Icon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.Toolbar>
 
     <ImageView
         android:id="@+id/meme"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_margin="@dimen/meme_preview_margin"
         android:scaleType="centerCrop"
         android:src="@drawable/click"
         app:layout_constraintBottom_toTopOf="@id/topTextInput"
         app:layout_constraintDimensionRatio="H,1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <TextView
         android:id="@+id/topTextPreview"
         style="@style/AppTheme.Meme.Preview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingEnd="@dimen/meme_preview_text_margin_start"
-        android:paddingStart="@dimen/meme_preview_text_margin_start"
         android:layout_marginTop="@dimen/meme_preview_text_margin_top"
         android:gravity="center_horizontal"
+        android:paddingEnd="@dimen/meme_preview_text_margin_start"
+        android:paddingStart="@dimen/meme_preview_text_margin_start"
         app:layout_constraintEnd_toEndOf="@id/meme"
         app:layout_constraintStart_toStartOf="@id/meme"
         app:layout_constraintTop_toTopOf="@id/meme" />
@@ -37,9 +73,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/meme_preview_text_margin_top"
+        android:gravity="center_horizontal"
         android:paddingEnd="@dimen/meme_preview_text_margin_start"
         android:paddingStart="@dimen/meme_preview_text_margin_start"
-        android:gravity="center_horizontal"
         app:layout_constraintBottom_toBottomOf="@id/meme"
         app:layout_constraintEnd_toEndOf="@id/meme"
         app:layout_constraintStart_toStartOf="@id/meme" />

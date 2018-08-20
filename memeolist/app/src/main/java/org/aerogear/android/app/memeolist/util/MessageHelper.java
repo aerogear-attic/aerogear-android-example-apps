@@ -15,13 +15,12 @@ public final class MessageHelper {
     }
 
     public void displayError(@StringRes int resId) {
-        new AppExecutors().mainThread().submit(() -> {
-            displayMessage(context.getString(resId));
-        });
+        displayError(context.getString(resId));
     }
 
     public void displayError(String message) {
-        displayMessage(message);
+        new AppExecutors().mainThread().submit(()
+                -> Toast.makeText(context, message, Toast.LENGTH_LONG).show());
     }
 
     public void displayMessage(@StringRes int resId) {
@@ -29,9 +28,8 @@ public final class MessageHelper {
     }
 
     public void displayMessage(String message) {
-        new AppExecutors().mainThread().submit(() -> {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-        });
+        new AppExecutors().mainThread().submit(()
+                -> Toast.makeText(context, message, Toast.LENGTH_LONG).show());
     }
 
 }
