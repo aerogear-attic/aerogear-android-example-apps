@@ -20,11 +20,10 @@ public final class SyncClient {
 
     private final ApolloClient apolloClient;
 
-    public SyncClient(@Nonnull OkHttpClient okHttpClient, @Nonnull String serverUrl,
-                      @Nonnull String webSocketUrl) {
+    public SyncClient(@Nonnull OkHttpClient okHttpClient, @Nonnull String serverUrl) {
         ApolloClient.Builder builder = ApolloClient.builder().serverUrl(nonNull(serverUrl, "serverUrl"))
                 .okHttpClient(nonNull(okHttpClient, "okHttpClient"))
-                .subscriptionTransportFactory(new Factory(webSocketUrl, okHttpClient));
+                .subscriptionTransportFactory(new Factory(serverUrl, okHttpClient));
         apolloClient = builder.build();
     }
 
@@ -33,9 +32,8 @@ public final class SyncClient {
             MobileCore mobileCore = MobileCore.getInstance();
             ServiceConfiguration configuration = mobileCore.getServiceConfigurationByType(TYPE);
             String serverUrl = configuration.getUrl();
-            String webSocketUrl = configuration.getProperty("subscription");
             OkHttpClient okHttpClient = mobileCore.getHttpLayer().getClient();
-            SyncClient.instance = new SyncClient(okHttpClient, serverUrl, webSocketUrl);
+            SyncClient.instance = new SyncClient(okHttpClient, serverUrl);
         }
         return instance;
     }
