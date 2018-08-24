@@ -253,6 +253,11 @@ public class MemeListActivity extends BaseActivity {
                     .enqueue(new ApolloCall.Callback<LikeMemeMutation.Data>() {
                         @Override
                         public void onResponse(@NotNull Response<LikeMemeMutation.Data> response) {
+                            if (response.hasErrors()) {
+                                new MessageHelper(view.getContext())
+                                        .displayError(R.string.failed_to_like);
+                                return;
+                            }
                             meme.setLikes(meme.getLikes() + 1);
                             new MessageHelper(view.getContext())
                                     .displayMessage(R.string.meme_liked);
