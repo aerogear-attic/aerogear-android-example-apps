@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,15 +17,14 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.graphql.CreateMemeMutation;
-import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Requester;
 import org.aerogear.mobile.core.reactive.Responder;
+import org.aerogear.mobile.sync.SyncClient;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
