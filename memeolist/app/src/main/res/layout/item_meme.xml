@@ -93,18 +93,33 @@
                     android:layout_marginTop="@dimen/meme_like_icon_margin_top"
                     android:src="@drawable/ic_favorite"
                     android:tint="@color/colorAccent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/meme" />
 
-                <TextView
+                <TextSwitcher
                     android:id="@+id/likes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/meme_likes_margin_start"
-                    android:text="@{@string/meme_likes(meme.likes)}"
+                    android:inAnimation="@anim/slide_in_likes_counter"
+                    android:outAnimation="@anim/slide_out_likes_counter"
                     android:textColor="@color/colorAccent"
                     app:layout_constraintBottom_toBottomOf="@id/likesIcon"
                     app:layout_constraintStart_toEndOf="@id/likesIcon"
-                    app:layout_constraintTop_toTopOf="@id/likesIcon" />
+                    app:layout_constraintTop_toTopOf="@id/likesIcon">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{@string/meme_likes(meme.likes)}"
+                        android:textColor="@color/colorAccent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorAccent" />
+
+                </TextSwitcher>
 
                 <ImageView
                     android:id="@+id/like"
