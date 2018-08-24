@@ -12,11 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.apollographql.apollo.ApolloCall;
-import com.apollographql.apollo.ApolloClient;
-import com.apollographql.apollo.ApolloSubscriptionCall;
 import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.github.nitrico.lastadapter.LastAdapter;
@@ -30,18 +26,18 @@ import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
 import org.aerogear.android.app.memeolist.graphql.ProfileQuery;
 import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
-import org.aerogear.mobile.sync.SyncClient;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
 import org.aerogear.mobile.auth.user.UserPrincipal;
 import org.aerogear.mobile.core.Callback;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
-import org.jetbrains.annotations.NotNull;
+import org.aerogear.mobile.core.reactive.RequestMapFunction;
+import org.aerogear.mobile.core.reactive.Requester;
+import org.aerogear.mobile.core.reactive.Responder;
+import org.aerogear.mobile.sync.SyncClient;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nonnull;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,7 +45,6 @@ import butterknife.OnClick;
 
 public class MemeListActivity extends BaseActivity {
 
-    private ApolloClient apolloClient;
     private ObservableList<Meme> memes = new ObservableArrayList<>();
 
     @BindView(R.id.memes)
@@ -69,8 +64,6 @@ public class MemeListActivity extends BaseActivity {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
             finish();
         } else {
-
-            apolloClient = SyncClient.getInstance().getApolloClient();
 
             mMemes.setLayoutManager(new LinearLayoutManager(this));
             mMemes.setHasFixedSize(true);
@@ -112,13 +105,14 @@ public class MemeListActivity extends BaseActivity {
     }
 
     public void createOrRetrieveProfile() {
-        // TODO invalid flow/crashing app
-        ProfileQuery profileQuery = ProfileQuery.builder().email(userProfile.getEmail()).build();
-        apolloClient
-                .query(profileQuery)
-                .enqueue(new ApolloCall.Callback<ProfileQuery.Data>() {
+        SyncClient
+                .getInstance()
+                .query(ProfileQuery.builder().email(userProfile.getEmail()).build())
+                .execute(ProfileQuery.Data.class)
+                .respondOn(new AppExecutors().mainThread())
+                .respondWith(new Responder<Response<ProfileQuery.Data>>() {
                     @Override
-                    public void onResponse(@NotNull Response<ProfileQuery.Data> response) {
+                    public void onResult(Response<ProfileQuery.Data> response) {
                         ProfileQuery.Data data = response.data();
                         if (data != null) {
                             List<ProfileQuery.Profile> profile = data.profile();
@@ -129,8 +123,8 @@ public class MemeListActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onFailure(@NotNull ApolloException e) {
-                        MobileCore.getLogger().error(e.getMessage(), e);
+                    public void onException(Exception exception) {
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
                         displayError(R.string.profile_cannot_fetch);
                     }
                 });
@@ -143,83 +137,92 @@ public class MemeListActivity extends BaseActivity {
                 .pictureurl(userProfile.getPictureUrl())
                 .build();
 
-        apolloClient
-                .mutate(createProfileMutation)
-                .enqueue(new ApolloCall.Callback<CreateProfileMutation.Data>() {
+        SyncClient
+                .getInstance()
+                .mutation(createProfileMutation)
+                .execute(CreateProfileMutation.Data.class)
+                .respondOn(new AppExecutors().mainThread())
+                .respondWith(new Responder<Response<CreateProfileMutation.Data>>() {
                     @Override
-                    public void onResponse(@NotNull Response<CreateProfileMutation.Data> response) {
+                    public void onResult(Response<CreateProfileMutation.Data> response) {
                         MobileCore.getLogger().info(getString(R.string.profile_created));
                     }
 
                     @Override
-                    public void onFailure(@NotNull ApolloException e) {
-                        MobileCore.getLogger().error(e.getMessage(), e);
+                    public void onException(Exception exception) {
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
                         displayError(R.string.profile_create_fail);
                     }
                 });
     }
 
     private void subscribeMemes() {
-        apolloClient
+        SyncClient
+                .getInstance()
                 .subscribe(new MemeAddedSubscription())
-                .execute(new ApolloSubscriptionCall.Callback<MemeAddedSubscription.Data>() {
+                .execute(MemeAddedSubscription.Data.class)
+                .requestMap(response -> {
+                    MemeAddedSubscription.MemeAdded node = response.data().memeAdded();
+                    Meme newMeme = new Meme(node.id(), node.photourl(), new ArrayList<>());
+                    return Requester.emit(newMeme);
+                })
+                .respondOn(new AppExecutors().mainThread())
+                .respondWith(new Responder<Meme>() {
                     @Override
-                    public void onResponse(@NotNull Response<MemeAddedSubscription.Data> response) {
-                        MemeAddedSubscription.MemeAdded node = response.data().memeAdded();
-                        Meme newMeme = new Meme(node.id(), node.photourl(), new ArrayList<>());
-                        new AppExecutors().mainThread().submit(() -> {
-                            memes.add(0, newMeme);
-                            mMemes.smoothScrollToPosition(0);
-                        });
+                    public void onResult(Meme meme) {
+                        memes.add(0, meme);
+                        mMemes.smoothScrollToPosition(0);
                     }
 
                     @Override
-                    public void onFailure(@NotNull ApolloException e) {
-                        MobileCore.getLogger().error(e.getMessage(), e);
+                    public void onException(Exception exception) {
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
                         displayError(R.string.error_subscribe_meme_creation);
-                    }
-
-                    @Override
-                    public void onCompleted() {
                     }
                 });
     }
 
     private void retrieveMemes() {
-        apolloClient
+        SyncClient
+                .getInstance()
                 .query(new AllMemesQuery())
-                .enqueue(new ApolloCall.Callback<AllMemesQuery.Data>() {
+                .execute(AllMemesQuery.Data.class)
+                .requestMap((RequestMapFunction<Response<AllMemesQuery.Data>, List<Meme>>) response -> {
+                    List<Meme> memes = new ArrayList<>();
+
+                    List<AllMemesQuery.AllMeme> allMemes = response.data().allMemes();
+                    for (AllMemesQuery.AllMeme meme : allMemes) {
+                        List<AllMemesQuery.Comment> comments = meme.comments();
+                        ArrayList<Comment> commentsList = new ArrayList<>();
+                        for (AllMemesQuery.Comment comment : comments) {
+                            Comment commentObj = new Comment(
+                                    comment.id(),
+                                    comment.owner(),
+                                    comment.comment(),
+                                    meme.id()
+                            );
+                            commentsList.add(commentObj);
+                        }
+                        Meme currentMeme = new Meme(meme.id(), meme.photourl(), commentsList);
+                        currentMeme.setLikes(meme.likes());
+                        currentMeme.setOwner(meme.owner());
+                        memes.add(currentMeme);
+                    }
+
+                    return Requester.emit(memes);
+                })
+                .respondOn(new AppExecutors().mainThread())
+                .respondWith(new Responder<List<Meme>>() {
                     @Override
-                    public void onResponse(@Nonnull Response<AllMemesQuery.Data> response) {
-                        new AppExecutors().mainThread().submit(() -> {
-                            memes.clear();
-
-                            List<AllMemesQuery.AllMeme> allMemes = response.data().allMemes();
-                            for (AllMemesQuery.AllMeme meme : allMemes) {
-                                List<AllMemesQuery.Comment> comments = meme.comments();
-                                ArrayList<Comment> commentsList = new ArrayList<>();
-                                for (AllMemesQuery.Comment comment : comments) {
-                                    Comment commentObj = new Comment(
-                                            comment.id(),
-                                            comment.owner(),
-                                            comment.comment(),
-                                            meme.id()
-                                    );
-                                    commentsList.add(commentObj);
-                                }
-                                Meme currentMeme = new Meme(meme.id(), meme.photourl(), commentsList);
-                                currentMeme.setLikes(meme.likes());
-                                currentMeme.setOwner(meme.owner());
-                                memes.add(currentMeme);
-                            }
-
-                            mSwipe.setRefreshing(false);
-                        });
+                    public void onResult(List<Meme> memeList) {
+                        memes.clear();
+                        memes.addAll(memeList);
+                        mSwipe.setRefreshing(false);
                     }
 
                     @Override
-                    public void onFailure(@Nonnull ApolloException e) {
-                        MobileCore.getLogger().error(e.getMessage(), e);
+                    public void onException(Exception exception) {
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
                         displayError(R.string.error_retrieve_memes);
                         mSwipe.setRefreshing(false);
                     }
@@ -247,25 +250,22 @@ public class MemeListActivity extends BaseActivity {
         }
 
         public static void like(View view, Meme meme) {
-            SyncClient.getInstance()
-                    .getApolloClient()
-                    .mutate(LikeMemeMutation.builder().memeid(meme.getId()).build())
-                    .enqueue(new ApolloCall.Callback<LikeMemeMutation.Data>() {
+            SyncClient
+                    .getInstance()
+                    .mutation(LikeMemeMutation.builder().memeid(meme.getId()).build())
+                    .execute(LikeMemeMutation.Data.class)
+                    .respondOn(new AppExecutors().mainThread())
+                    .respondWith(new Responder<Response<LikeMemeMutation.Data>>() {
                         @Override
-                        public void onResponse(@NotNull Response<LikeMemeMutation.Data> response) {
-                            if (response.hasErrors()) {
-                                new MessageHelper(view.getContext())
-                                        .displayError(R.string.failed_to_like);
-                                return;
-                            }
+                        public void onResult(Response<LikeMemeMutation.Data> value) {
                             meme.setLikes(meme.getLikes() + 1);
                             new MessageHelper(view.getContext())
                                     .displayMessage(R.string.meme_liked);
                         }
 
                         @Override
-                        public void onFailure(@NotNull ApolloException e) {
-                            MobileCore.getLogger().error(e.getMessage(), e);
+                        public void onException(Exception exception) {
+                            MobileCore.getLogger().error(exception.getMessage(), exception);
                             new MessageHelper(view.getContext())
                                     .displayError(R.string.failed_to_like);
                         }

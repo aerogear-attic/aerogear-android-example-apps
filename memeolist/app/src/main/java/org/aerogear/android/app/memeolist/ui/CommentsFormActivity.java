@@ -5,13 +5,9 @@ import android.databinding.ObservableList;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.TextView;
 
-import com.apollographql.apollo.ApolloCall;
-import com.apollographql.apollo.ApolloClient;
 import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
 import com.github.nitrico.lastadapter.LastAdapter;
 
 import org.aerogear.android.app.memeolist.BR;
@@ -19,10 +15,13 @@ import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.graphql.PostCommentMutation;
 import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
-import org.aerogear.mobile.sync.SyncClient;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
-import org.jetbrains.annotations.NotNull;
+import org.aerogear.mobile.core.reactive.Request;
+import org.aerogear.mobile.core.reactive.RequestMapFunction;
+import org.aerogear.mobile.core.reactive.Requester;
+import org.aerogear.mobile.core.reactive.Responder;
+import org.aerogear.mobile.sync.SyncClient;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +36,6 @@ public class CommentsFormActivity extends BaseActivity {
     RecyclerView commentList;
 
     private ObservableList<Comment> comments = new ObservableArrayList<>();
-    private ApolloClient apolloClient;
     private Meme meme;
 
     @Override
@@ -46,8 +44,6 @@ public class CommentsFormActivity extends BaseActivity {
         setContentView(R.layout.activity_comments_form);
 
         ButterKnife.bind(this);
-
-        apolloClient = SyncClient.getInstance().getApolloClient();
 
         commentList.setLayoutManager(new LinearLayoutManager(this));
         commentList.setHasFixedSize(true);
@@ -66,7 +62,7 @@ public class CommentsFormActivity extends BaseActivity {
     }
 
     @OnClick(R.id.new_comment)
-    void newComment(View view) {
+    void newComment() {
         Comment comment = new Comment(
                 userProfile.getDisplayName(),
                 commentText.getText().toString(),
@@ -79,26 +75,30 @@ public class CommentsFormActivity extends BaseActivity {
                 memeid(comment.getMemeId())
                 .build();
 
-        apolloClient.mutate(postCommentMutation)
-                .enqueue(new ApolloCall.Callback<PostCommentMutation.Data>() {
+        SyncClient
+                .getInstance()
+                .mutation(postCommentMutation)
+                .execute(PostCommentMutation.Data.class)
+                .respondOn(new AppExecutors().mainThread())
+                .requestMap(new RequestMapFunction<Response<PostCommentMutation.Data>, Comment>() {
                     @Override
-                    public void onResponse(@NotNull Response<PostCommentMutation.Data> response) {
+                    public Request<Comment> map(Response<PostCommentMutation.Data> response) throws Exception {
                         PostCommentMutation.PostComment postComment = response.data().postComment();
-
-                        MobileCore.getLogger().info("Comment created: " + postComment.id());
-
                         comment.setId(postComment.id());
 
-                        new AppExecutors().mainThread().submit(() -> {
-                            comments.add(comment);
-                        });
+                        return Requester.emit(comment);
+                    }
+                })
+                .respondWith(new Responder<Comment>() {
+                    @Override
+                    public void onResult(Comment value) {
+                        comments.add(comment);
                     }
 
                     @Override
-                    public void onFailure(@NotNull ApolloException e) {
-                        MobileCore.getLogger().error(e.getMessage(), e);
-                        new AppExecutors().mainThread().submit(() ->
-                                displayError(R.string.comment_create_error));
+                    public void onException(Exception exception) {
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
+                        displayError(R.string.comment_create_error);
                     }
                 });
     }

@@ -8,10 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.apollographql.apollo.ApolloCall;
-import com.apollographql.apollo.ApolloClient;
 import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -25,8 +22,6 @@ import org.aerogear.mobile.sync.SyncClient;
 import org.json.JSONObject;
 
 import java.io.File;
-
-import javax.annotation.Nonnull;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,7 +49,6 @@ public class MemeFormActivity extends BaseActivity {
     @BindView(R.id.bottomTextPreview)
     TextView mBottomTextPreview;
 
-    private ApolloClient apolloClient;
     private MaterialDialog progress;
     private File file;
     private boolean useFixedMeme = true;
@@ -65,8 +59,6 @@ public class MemeFormActivity extends BaseActivity {
         setContentView(R.layout.activity_meme_form);
 
         ButterKnife.bind(this);
-
-        apolloClient = SyncClient.getInstance().getApolloClient();
 
         mTopText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -172,21 +164,23 @@ public class MemeFormActivity extends BaseActivity {
                 .photourl(createMemeUrl(imageUrl))
                 .build();
 
-        apolloClient.mutate(mutation)
-                .enqueue(new ApolloCall.Callback<CreateMemeMutation.Data>() {
+        SyncClient
+                .getInstance()
+                .mutation(mutation)
+                .execute(CreateMemeMutation.Data.class)
+                .respondOn(new AppExecutors().mainThread())
+                .respondWith(new Responder<Response<CreateMemeMutation.Data>>() {
                     @Override
-                    public void onResponse(@Nonnull Response<CreateMemeMutation.Data> response) {
-                        new AppExecutors().mainThread().submit(() -> {
-                            progress.dismiss();
-                            displayMessage(R.string.meme_created);
-                            finish();
-                        });
+                    public void onResult(Response<CreateMemeMutation.Data> response) {
+                        progress.dismiss();
+                        displayMessage(R.string.meme_created);
+                        finish();
                     }
 
                     @Override
-                    public void onFailure(@Nonnull ApolloException e) {
-                        MobileCore.getLogger().error(e.getMessage(), e);
+                    public void onException(Exception exception) {
                         progress.dismiss();
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
                         displayError(getString(R.string.meme_error_mutation));
                     }
                 });
