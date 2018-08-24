@@ -30,6 +30,7 @@ import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
 import org.aerogear.android.app.memeolist.graphql.ProfileQuery;
 import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
+import org.aerogear.android.app.memeolist.sdk.ApolloResponseHandler;
 import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
 import org.aerogear.mobile.auth.user.UserPrincipal;
@@ -265,6 +266,7 @@ public class MemeListActivity extends BaseActivity {
 
                         @Override
                         public void onFailure(@NotNull ApolloException e) {
+                            MobileCore.getLogger().error(e.getMessage(), e);
                             new MessageHelper(view.getContext())
                                     .displayError(R.string.failed_to_like);
                         }
