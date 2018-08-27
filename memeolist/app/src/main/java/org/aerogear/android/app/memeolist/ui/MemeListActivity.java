@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.apollographql.apollo.api.Error;
 import com.apollographql.apollo.api.Response;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -31,8 +32,6 @@ import org.aerogear.mobile.auth.user.UserPrincipal;
 import org.aerogear.mobile.core.Callback;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
-import org.aerogear.mobile.core.reactive.RequestMapFunction;
-import org.aerogear.mobile.core.reactive.Requester;
 import org.aerogear.mobile.core.reactive.Responder;
 import org.aerogear.mobile.sync.SyncClient;
 
@@ -113,11 +112,18 @@ public class MemeListActivity extends BaseActivity {
                 .respondWith(new Responder<Response<ProfileQuery.Data>>() {
                     @Override
                     public void onResult(Response<ProfileQuery.Data> response) {
-                        ProfileQuery.Data data = response.data();
-                        if (data != null) {
-                            List<ProfileQuery.Profile> profile = data.profile();
-                            if (profile.isEmpty()) {
-                                createProfile();
+                        if (response.hasErrors()) {
+                            for (Error error : response.errors()) {
+                                MobileCore.getLogger().error(error.message());
+                            }
+                            displayError(R.string.profile_cannot_fetch);
+                        } else {
+                            ProfileQuery.Data data = response.data();
+                            if (data != null) {
+                                List<ProfileQuery.Profile> profile = data.profile();
+                                if (profile.isEmpty()) {
+                                    createProfile();
+                                }
                             }
                         }
                     }
@@ -145,7 +151,14 @@ public class MemeListActivity extends BaseActivity {
                 .respondWith(new Responder<Response<CreateProfileMutation.Data>>() {
                     @Override
                     public void onResult(Response<CreateProfileMutation.Data> response) {
-                        MobileCore.getLogger().info(getString(R.string.profile_created));
+                        if (response.hasErrors()) {
+                            for (Error error : response.errors()) {
+                                MobileCore.getLogger().error(error.message());
+                            }
+                            displayError(R.string.profile_create_fail);
+                        } else {
+                            MobileCore.getLogger().info(getString(R.string.profile_created));
+                        }
                     }
 
                     @Override
@@ -161,17 +174,21 @@ public class MemeListActivity extends BaseActivity {
                 .getInstance()
                 .subscribe(new MemeAddedSubscription())
                 .execute(MemeAddedSubscription.Data.class)
-                .requestMap(response -> {
-                    MemeAddedSubscription.MemeAdded node = response.data().memeAdded();
-                    Meme newMeme = new Meme(node.id(), node.photourl(), node.owner());
-                    return Requester.emit(newMeme);
-                })
                 .respondOn(new AppExecutors().mainThread())
-                .respondWith(new Responder<Meme>() {
+                .respondWith(new Responder<Response<MemeAddedSubscription.Data>>() {
                     @Override
-                    public void onResult(Meme meme) {
-                        memes.add(0, meme);
-                        mMemes.smoothScrollToPosition(0);
+                    public void onResult(Response<MemeAddedSubscription.Data> response) {
+                        if (response.hasErrors()) {
+                            for (Error error : response.errors()) {
+                                MobileCore.getLogger().error(error.message());
+                            }
+                            displayError(R.string.error_subscribe_meme_creation);
+                        } else {
+                            MemeAddedSubscription.MemeAdded node = response.data().memeAdded();
+                            Meme newMeme = new Meme(node.id(), node.photourl(), node.owner());
+                            memes.add(0, newMeme);
+                            mMemes.smoothScrollToPosition(0);
+                        }
                     }
 
                     @Override
@@ -187,38 +204,39 @@ public class MemeListActivity extends BaseActivity {
                 .getInstance()
                 .query(new AllMemesQuery())
                 .execute(AllMemesQuery.Data.class)
-                .requestMap((RequestMapFunction<Response<AllMemesQuery.Data>, List<Meme>>) response -> {
-                    List<Meme> memes = new ArrayList<>();
-
-                    List<AllMemesQuery.AllMeme> allMemes = response.data().allMemes();
-                    for (AllMemesQuery.AllMeme meme : allMemes) {
-                        List<AllMemesQuery.Comment> comments = meme.comments();
-                        ArrayList<Comment> commentsList = new ArrayList<>();
-                        for (AllMemesQuery.Comment comment : comments) {
-                            Comment commentObj = new Comment(
-                                    comment.id(),
-                                    comment.owner(),
-                                    comment.comment(),
-                                    meme.id()
-                            );
-                            commentsList.add(commentObj);
-                        }
-                        Meme currentMeme = new Meme(meme.id(), meme.photourl(),
-                                meme.owner(), meme.likes(), commentsList);
-                        currentMeme.setLikes(meme.likes());
-                        currentMeme.setOwner(meme.owner());
-                        memes.add(currentMeme);
-                    }
-
-                    return Requester.emit(memes);
-                })
-                .respondOn(new AppExecutors().mainThread())
-                .respondWith(new Responder<List<Meme>>() {
+                .respondWith(new Responder<Response<AllMemesQuery.Data>>() {
                     @Override
-                    public void onResult(List<Meme> memeList) {
-                        memes.clear();
-                        memes.addAll(memeList);
-                        mSwipe.setRefreshing(false);
+                    public void onResult(Response<AllMemesQuery.Data> response) {
+                        if (response.hasErrors()) {
+                            for (Error error : response.errors()) {
+                                MobileCore.getLogger().error(error.message());
+                            }
+                            displayError(R.string.error_retrieve_memes);
+                        } else {
+                            memes.clear();
+
+                            List<AllMemesQuery.AllMeme> allMemes = response.data().allMemes();
+                            for (AllMemesQuery.AllMeme meme : allMemes) {
+                                List<AllMemesQuery.Comment> comments = meme.comments();
+                                ArrayList<Comment> commentsList = new ArrayList<>();
+                                for (AllMemesQuery.Comment comment : comments) {
+                                    Comment commentObj = new Comment(
+                                            comment.id(),
+                                            comment.owner(),
+                                            comment.comment(),
+                                            meme.id()
+                                    );
+                                    commentsList.add(commentObj);
+                                }
+                                Meme currentMeme = new Meme(meme.id(), meme.photourl(),
+                                        meme.owner(), meme.likes(), commentsList);
+                                currentMeme.setLikes(meme.likes());
+                                currentMeme.setOwner(meme.owner());
+                                memes.add(currentMeme);
+
+                                mSwipe.setRefreshing(false);
+                            }
+                        }
                     }
 
                     @Override
@@ -257,18 +275,25 @@ public class MemeListActivity extends BaseActivity {
                     .execute(LikeMemeMutation.Data.class)
                     .respondOn(new AppExecutors().mainThread())
                     .respondWith(new Responder<Response<LikeMemeMutation.Data>>() {
+                        final MessageHelper messageHelper = new MessageHelper(view.getContext());
+
                         @Override
-                        public void onResult(Response<LikeMemeMutation.Data> value) {
-                            meme.setLikes(meme.getLikes() + 1);
-                            new MessageHelper(view.getContext())
-                                    .displayMessage(R.string.meme_liked);
+                        public void onResult(Response<LikeMemeMutation.Data> response) {
+                            if (response.hasErrors()) {
+                                for (Error error : response.errors()) {
+                                    MobileCore.getLogger().error(error.message());
+                                }
+                                messageHelper.displayError(R.string.error_retrieve_memes);
+                            } else {
+                                meme.setLikes(meme.getLikes() + 1);
+                                messageHelper.displayMessage(R.string.meme_liked);
+                            }
                         }
 
                         @Override
                         public void onException(Exception exception) {
                             MobileCore.getLogger().error(exception.getMessage(), exception);
-                            new MessageHelper(view.getContext())
-                                    .displayError(R.string.failed_to_like);
+                            messageHelper.displayError(R.string.failed_to_like);
                         }
                     });
         }

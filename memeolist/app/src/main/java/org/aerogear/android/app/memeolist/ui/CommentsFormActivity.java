@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
+import com.apollographql.apollo.api.Error;
 import com.apollographql.apollo.api.Response;
 import com.github.nitrico.lastadapter.LastAdapter;
 
@@ -17,9 +18,6 @@ import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
-import org.aerogear.mobile.core.reactive.Request;
-import org.aerogear.mobile.core.reactive.RequestMapFunction;
-import org.aerogear.mobile.core.reactive.Requester;
 import org.aerogear.mobile.core.reactive.Responder;
 import org.aerogear.mobile.sync.SyncClient;
 
@@ -80,19 +78,19 @@ public class CommentsFormActivity extends BaseActivity {
                 .mutation(postCommentMutation)
                 .execute(PostCommentMutation.Data.class)
                 .respondOn(new AppExecutors().mainThread())
-                .requestMap(new RequestMapFunction<Response<PostCommentMutation.Data>, Comment>() {
+                .respondWith(new Responder<Response<PostCommentMutation.Data>>() {
                     @Override
-                    public Request<Comment> map(Response<PostCommentMutation.Data> response) throws Exception {
-                        PostCommentMutation.PostComment postComment = response.data().postComment();
-                        comment.setId(postComment.id());
-
-                        return Requester.emit(comment);
-                    }
-                })
-                .respondWith(new Responder<Comment>() {
-                    @Override
-                    public void onResult(Comment value) {
-                        comments.add(comment);
+                    public void onResult(Response<PostCommentMutation.Data> response) {
+                        if (response.hasErrors()) {
+                            for (Error error : response.errors()) {
+                                MobileCore.getLogger().error(error.message());
+                            }
+                            displayError(R.string.comment_create_error);
+                        } else {
+                            PostCommentMutation.PostComment postComment = response.data().postComment();
+                            comment.setId(postComment.id());
+                            comments.add(comment);
+                        }
                     }
 
                     @Override

@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.apollographql.apollo.api.Error;
 import com.apollographql.apollo.api.Response;
 import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -172,9 +173,16 @@ public class MemeFormActivity extends BaseActivity {
                 .respondWith(new Responder<Response<CreateMemeMutation.Data>>() {
                     @Override
                     public void onResult(Response<CreateMemeMutation.Data> response) {
-                        progress.dismiss();
-                        displayMessage(R.string.meme_created);
-                        finish();
+                        if (response.hasErrors()) {
+                            for (Error error : response.errors()) {
+                                MobileCore.getLogger().error(error.message());
+                            }
+                            displayError(R.string.meme_error_mutation);
+                        } else {
+                            progress.dismiss();
+                            displayMessage(R.string.meme_created);
+                            finish();
+                        }
                     }
 
                     @Override
