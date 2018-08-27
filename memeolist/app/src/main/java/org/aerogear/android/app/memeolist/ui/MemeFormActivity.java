@@ -140,7 +140,6 @@ public class MemeFormActivity extends BaseActivity {
             }
 
             uploadImage()
-                    .respondOn(new AppExecutors().mainThread())
                     .respondWith(new Responder<String>() {
                         @Override
                         public void onResult(String imageUrl) {
@@ -169,7 +168,6 @@ public class MemeFormActivity extends BaseActivity {
                 .getInstance()
                 .mutation(mutation)
                 .execute(CreateMemeMutation.Data.class)
-                .respondOn(new AppExecutors().mainThread())
                 .respondWith(new Responder<Response<CreateMemeMutation.Data>>() {
                     @Override
                     public void onResult(Response<CreateMemeMutation.Data> response) {
@@ -217,7 +215,9 @@ public class MemeFormActivity extends BaseActivity {
             JSONObject jsonResponse = new JSONObject(response.body().string());
             return jsonResponse.getJSONObject("data").getString("link");
 
-        }).requestOn(new AppExecutors().networkThread());
+        })
+                .requestOn(new AppExecutors().networkThread())
+                .respondOn(new AppExecutors().mainThread());
 
     }
 

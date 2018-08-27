@@ -108,7 +108,6 @@ public class MemeListActivity extends BaseActivity {
                 .getInstance()
                 .query(ProfileQuery.builder().email(userProfile.getEmail()).build())
                 .execute(ProfileQuery.Data.class)
-                .respondOn(new AppExecutors().mainThread())
                 .respondWith(new Responder<Response<ProfileQuery.Data>>() {
                     @Override
                     public void onResult(Response<ProfileQuery.Data> response) {
@@ -147,7 +146,6 @@ public class MemeListActivity extends BaseActivity {
                 .getInstance()
                 .mutation(createProfileMutation)
                 .execute(CreateProfileMutation.Data.class)
-                .respondOn(new AppExecutors().mainThread())
                 .respondWith(new Responder<Response<CreateProfileMutation.Data>>() {
                     @Override
                     public void onResult(Response<CreateProfileMutation.Data> response) {
@@ -174,7 +172,6 @@ public class MemeListActivity extends BaseActivity {
                 .getInstance()
                 .subscribe(new MemeAddedSubscription())
                 .execute(MemeAddedSubscription.Data.class)
-                .respondOn(new AppExecutors().mainThread())
                 .respondWith(new Responder<Response<MemeAddedSubscription.Data>>() {
                     @Override
                     public void onResult(Response<MemeAddedSubscription.Data> response) {
@@ -273,7 +270,6 @@ public class MemeListActivity extends BaseActivity {
                     .getInstance()
                     .mutation(LikeMemeMutation.builder().memeid(meme.getId()).build())
                     .execute(LikeMemeMutation.Data.class)
-                    .respondOn(new AppExecutors().mainThread())
                     .respondWith(new Responder<Response<LikeMemeMutation.Data>>() {
                         final MessageHelper messageHelper = new MessageHelper(view.getContext());
 

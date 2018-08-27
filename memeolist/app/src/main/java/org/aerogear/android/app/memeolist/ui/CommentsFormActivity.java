@@ -17,7 +17,6 @@ import org.aerogear.android.app.memeolist.graphql.PostCommentMutation;
 import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.mobile.core.MobileCore;
-import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Responder;
 import org.aerogear.mobile.sync.SyncClient;
 
@@ -77,7 +76,6 @@ public class CommentsFormActivity extends BaseActivity {
                 .getInstance()
                 .mutation(postCommentMutation)
                 .execute(PostCommentMutation.Data.class)
-                .respondOn(new AppExecutors().mainThread())
                 .respondWith(new Responder<Response<PostCommentMutation.Data>>() {
                     @Override
                     public void onResult(Response<PostCommentMutation.Data> response) {
