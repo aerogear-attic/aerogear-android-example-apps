@@ -4,6 +4,7 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,13 +12,23 @@ public class Meme extends BaseObservable implements Serializable {
 
     private String id;
     private String photoUrl;
-    private List<Comment> comments;
     private long likes;
     private String owner;
+    private List<Comment> comments;
 
-    public Meme(String id, String photoUrl, List<Comment> comments) {
+    public Meme(String id, String photoUrl, String owner) {
         this.id = id;
         this.photoUrl = photoUrl;
+        this.owner = owner;
+        this.likes = 0;
+        this.comments = new ArrayList<>();
+    }
+
+    public Meme(String id, String photoUrl, String owner, long likes, List<Comment> comments) {
+        this.id = id;
+        this.photoUrl = photoUrl;
+        this.owner = owner;
+        this.likes = likes;
         this.comments = comments;
     }
 
@@ -37,26 +48,13 @@ public class Meme extends BaseObservable implements Serializable {
         this.photoUrl = photoUrl;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Meme meme = (Meme) o;
-        return Objects.equals(id, meme.id);
+    @Bindable
+    public long getLikes() {
+        return likes;
     }
 
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id);
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+    public void setLikes(long likes) {
+        this.likes = likes;
     }
 
     public String getOwner() {
@@ -67,13 +65,25 @@ public class Meme extends BaseObservable implements Serializable {
         this.owner = owner;
     }
 
-    @Bindable
-    public long getLikes() {
-        return likes;
+    public List<Comment> getComments() {
+        return comments;
     }
 
-    public void setLikes(long likes) {
-        this.likes = likes;
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Meme meme = (Meme) o;
+        return Objects.equals(id, meme.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

@@ -163,7 +163,7 @@ public class MemeListActivity extends BaseActivity {
                 .execute(MemeAddedSubscription.Data.class)
                 .requestMap(response -> {
                     MemeAddedSubscription.MemeAdded node = response.data().memeAdded();
-                    Meme newMeme = new Meme(node.id(), node.photourl(), new ArrayList<>());
+                    Meme newMeme = new Meme(node.id(), node.photourl(), node.owner());
                     return Requester.emit(newMeme);
                 })
                 .respondOn(new AppExecutors().mainThread())
@@ -203,7 +203,8 @@ public class MemeListActivity extends BaseActivity {
                             );
                             commentsList.add(commentObj);
                         }
-                        Meme currentMeme = new Meme(meme.id(), meme.photourl(), commentsList);
+                        Meme currentMeme = new Meme(meme.id(), meme.photourl(),
+                                meme.owner(), meme.likes(), commentsList);
                         currentMeme.setLikes(meme.likes());
                         currentMeme.setOwner(meme.owner());
                         memes.add(currentMeme);
