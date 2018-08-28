@@ -14,11 +14,11 @@
         {
           "kind": "OBJECT",
           "name": "Query",
-          "description": null,
+          "description": "",
           "fields": [
             {
               "name": "allMemes",
-              "description": null,
+              "description": "",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -42,11 +42,11 @@
             },
             {
               "name": "profile",
-              "description": null,
+              "description": "",
               "args": [
                 {
                   "name": "email",
-                  "description": null,
+                  "description": "",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -84,27 +84,11 @@
         {
           "kind": "OBJECT",
           "name": "Meme",
-          "description": null,
+          "description": "",
           "fields": [
             {
               "name": "id",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "ID",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "ownerid",
-              "description": null,
+              "description": "",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -120,7 +104,7 @@
             },
             {
               "name": "photourl",
-              "description": null,
+              "description": "",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -135,20 +119,8 @@
               "deprecationReason": null
             },
             {
-              "name": "owner",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
               "name": "likes",
-              "description": null,
+              "description": "",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -163,8 +135,32 @@
               "deprecationReason": null
             },
             {
+              "name": "owner",
+              "description": "",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "Profile",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "comments",
-              "description": null,
+              "description": "",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -224,71 +220,12 @@
         },
         {
           "kind": "OBJECT",
-          "name": "Comment",
-          "description": null,
-          "fields": [
-            {
-              "name": "id",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "ID",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "owner",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "comment",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            }
-          ],
-          "inputFields": null,
-          "interfaces": [],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "OBJECT",
           "name": "Profile",
-          "description": null,
+          "description": "",
           "fields": [
             {
               "name": "id",
-              "description": null,
+              "description": "",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -304,7 +241,7 @@
             },
             {
               "name": "email",
-              "description": null,
+              "description": "",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -320,7 +257,7 @@
             },
             {
               "name": "displayname",
-              "description": null,
+              "description": "",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -332,7 +269,7 @@
             },
             {
               "name": "pictureurl",
-              "description": null,
+              "description": "",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -344,7 +281,7 @@
             },
             {
               "name": "memes",
-              "description": null,
+              "description": "",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -374,16 +311,75 @@
         },
         {
           "kind": "OBJECT",
+          "name": "Comment",
+          "description": "",
+          "fields": [
+            {
+              "name": "id",
+              "description": "",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "owner",
+              "description": "",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "comment",
+              "description": "",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
           "name": "Mutation",
-          "description": null,
+          "description": "",
           "fields": [
             {
               "name": "createProfile",
-              "description": null,
+              "description": "",
               "args": [
                 {
                   "name": "email",
-                  "description": null,
+                  "description": "",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -397,7 +393,7 @@
                 },
                 {
                   "name": "displayname",
-                  "description": null,
+                  "description": "",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -411,7 +407,7 @@
                 },
                 {
                   "name": "pictureurl",
-                  "description": null,
+                  "description": "",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -438,11 +434,11 @@
             },
             {
               "name": "createMeme",
-              "description": null,
+              "description": "",
               "args": [
                 {
-                  "name": "ownerid",
-                  "description": null,
+                  "name": "owner",
+                  "description": "",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -456,21 +452,7 @@
                 },
                 {
                   "name": "photourl",
-                  "description": null,
-                  "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
-                      "ofType": null
-                    }
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "owner",
-                  "description": null,
+                  "description": "",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -497,11 +479,11 @@
             },
             {
               "name": "likeMeme",
-              "description": null,
+              "description": "",
               "args": [
                 {
                   "name": "id",
-                  "description": null,
+                  "description": "",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -524,11 +506,11 @@
             },
             {
               "name": "postComment",
-              "description": null,
+              "description": "",
               "args": [
                 {
                   "name": "memeid",
-                  "description": null,
+                  "description": "",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -542,7 +524,7 @@
                 },
                 {
                   "name": "comment",
-                  "description": null,
+                  "description": "",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -556,7 +538,7 @@
                 },
                 {
                   "name": "owner",
-                  "description": null,
+                  "description": "",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -600,15 +582,15 @@
         {
           "kind": "OBJECT",
           "name": "Subscription",
-          "description": null,
+          "description": "",
           "fields": [
             {
               "name": "memeAdded",
-              "description": null,
+              "description": "",
               "args": [
                 {
                   "name": "photourl",
-                  "description": null,
+                  "description": "",
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
@@ -1546,6 +1528,17 @@
           ]
         }
       ]
+    }
+  },
+  "extensions": {
+    "tracing": {
+      "version": 1,
+      "startTime": "2018-08-28T13:57:53.436Z",
+      "endTime": "2018-08-28T13:57:53.460Z",
+      "duration": 24151088,
+      "execution": {
+        "resolvers": []
+      }
     }
   }
 }

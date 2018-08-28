@@ -181,9 +181,8 @@ public class MemeListActivity extends BaseActivity {
                             }
                             displayError(R.string.error_subscribe_meme_creation);
                         } else {
-                            MemeAddedSubscription.MemeAdded node = response.data().memeAdded();
-                            Meme newMeme = new Meme(node.id(), node.photourl(), node.owner());
-                            memes.add(0, newMeme);
+                            MemeAddedSubscription.MemeAdded meme = response.data().memeAdded();
+                            memes.add(0, Meme.from(meme));
                             mMemes.smoothScrollToPosition(0);
                         }
                     }
@@ -214,25 +213,10 @@ public class MemeListActivity extends BaseActivity {
 
                             List<AllMemesQuery.AllMeme> allMemes = response.data().allMemes();
                             for (AllMemesQuery.AllMeme meme : allMemes) {
-                                List<AllMemesQuery.Comment> comments = meme.comments();
-                                ArrayList<Comment> commentsList = new ArrayList<>();
-                                for (AllMemesQuery.Comment comment : comments) {
-                                    Comment commentObj = new Comment(
-                                            comment.id(),
-                                            comment.owner(),
-                                            comment.comment(),
-                                            meme.id()
-                                    );
-                                    commentsList.add(commentObj);
-                                }
-                                Meme currentMeme = new Meme(meme.id(), meme.photourl(),
-                                        meme.owner(), meme.likes(), commentsList);
-                                currentMeme.setLikes(meme.likes());
-                                currentMeme.setOwner(meme.owner());
-                                memes.add(currentMeme);
-
-                                mSwipe.setRefreshing(false);
+                                memes.add(Meme.from(meme));
                             }
+
+                            mSwipe.setRefreshing(false);
                         }
                     }
 
@@ -243,6 +227,14 @@ public class MemeListActivity extends BaseActivity {
                         mSwipe.setRefreshing(false);
                     }
                 });
+    }
+
+    @BindingAdapter("ownerAvatar")
+    public static void displayOwnerAvatar(ImageView imageView, Meme meme) {
+        Glide.with(imageView)
+                .load(meme.getOwner().getPictureUrl())
+                .apply(RequestOptions.circleCropTransform())
+                .into(imageView);
     }
 
     @BindingAdapter("memeImage")
