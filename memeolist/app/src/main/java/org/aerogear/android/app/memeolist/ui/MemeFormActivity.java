@@ -4,31 +4,25 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.apollographql.apollo.ApolloCall;
-import com.apollographql.apollo.ApolloClient;
+import com.apollographql.apollo.api.Error;
 import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.graphql.CreateMemeMutation;
-import org.aerogear.android.app.memeolist.sdk.SyncClient;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Requester;
 import org.aerogear.mobile.core.reactive.Responder;
+import org.aerogear.mobile.sync.SyncClient;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.Objects;
-
-import javax.annotation.Nonnull;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,7 +50,6 @@ public class MemeFormActivity extends BaseActivity {
     @BindView(R.id.bottomTextPreview)
     TextView mBottomTextPreview;
 
-    private ApolloClient apolloClient;
     private MaterialDialog progress;
     private File file;
     private boolean useFixedMeme = true;
@@ -67,8 +60,6 @@ public class MemeFormActivity extends BaseActivity {
         setContentView(R.layout.activity_meme_form);
 
         ButterKnife.bind(this);
-
-        apolloClient = SyncClient.getInstance().getApolloClient();
 
         mTopText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -149,7 +140,6 @@ public class MemeFormActivity extends BaseActivity {
             }
 
             uploadImage()
-                    .respondOn(new AppExecutors().mainThread())
                     .respondWith(new Responder<String>() {
                         @Override
                         public void onResult(String imageUrl) {
@@ -174,21 +164,29 @@ public class MemeFormActivity extends BaseActivity {
                 .photourl(createMemeUrl(imageUrl))
                 .build();
 
-        apolloClient.mutate(mutation)
-                .enqueue(new ApolloCall.Callback<CreateMemeMutation.Data>() {
+        SyncClient
+                .getInstance()
+                .mutation(mutation)
+                .execute(CreateMemeMutation.Data.class)
+                .respondWith(new Responder<Response<CreateMemeMutation.Data>>() {
                     @Override
-                    public void onResponse(@Nonnull Response<CreateMemeMutation.Data> response) {
-                        new AppExecutors().mainThread().submit(() -> {
+                    public void onResult(Response<CreateMemeMutation.Data> response) {
+                        if (response.hasErrors()) {
+                            for (Error error : response.errors()) {
+                                MobileCore.getLogger().error(error.message());
+                            }
+                            displayError(R.string.meme_error_mutation);
+                        } else {
                             progress.dismiss();
                             displayMessage(R.string.meme_created);
                             finish();
-                        });
+                        }
                     }
 
                     @Override
-                    public void onFailure(@Nonnull ApolloException e) {
-                        MobileCore.getLogger().error(e.getMessage(), e);
+                    public void onException(Exception exception) {
                         progress.dismiss();
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
                         displayError(getString(R.string.meme_error_mutation));
                     }
                 });
@@ -217,7 +215,9 @@ public class MemeFormActivity extends BaseActivity {
             JSONObject jsonResponse = new JSONObject(response.body().string());
             return jsonResponse.getJSONObject("data").getString("link");
 
-        }).requestOn(new AppExecutors().networkThread());
+        })
+                .requestOn(new AppExecutors().networkThread())
+                .respondOn(new AppExecutors().mainThread());
 
     }
 

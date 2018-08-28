@@ -58,6 +58,7 @@ subscription memeAdded {
   memeAdded {
     id
     photourl
+    owner
     likes
   }
 }
