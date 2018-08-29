@@ -13,11 +13,11 @@ import java.util.Objects;
 
 public class Meme extends BaseObservable implements Serializable {
 
-    private String id;
-    private String photoUrl;
-    private long likes;
-    private UserProfile owner;
-    private List<Comment> comments;
+    private final String id;
+    private final String photoUrl;
+    private final long likes;
+    private final UserProfile owner;
+    private final List<Comment> comments;
 
     public Meme(String id, String photoUrl, UserProfile owner) {
         this.id = id;
@@ -39,16 +39,8 @@ public class Meme extends BaseObservable implements Serializable {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getPhotoUrl() {
         return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
     }
 
     @Bindable
@@ -56,24 +48,12 @@ public class Meme extends BaseObservable implements Serializable {
         return likes;
     }
 
-    public void setLikes(long likes) {
-        this.likes = likes;
-    }
-
     public UserProfile getOwner() {
         return owner;
     }
 
-    public void setOwner(UserProfile owner) {
-        this.owner = owner;
-    }
-
     public List<Comment> getComments() {
         return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
     }
 
     @Override
