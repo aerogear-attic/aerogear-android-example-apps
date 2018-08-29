@@ -5,17 +5,24 @@ import android.databinding.BindingAdapter;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.CircularProgressDrawable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
+import android.widget.TextSwitcher;
 
 import com.apollographql.apollo.api.Error;
 import com.apollographql.apollo.api.Response;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.github.florent37.viewanimator.ViewAnimator;
 import com.github.nitrico.lastadapter.LastAdapter;
 
 import org.aerogear.android.app.memeolist.BR;
@@ -274,8 +281,8 @@ public class MemeListActivity extends BaseActivity {
                                 }
                                 messageHelper.displayError(R.string.error_retrieve_memes);
                             } else {
-                                meme.setLikes(meme.getLikes() + 1);
-                                messageHelper.displayMessage(R.string.meme_liked);
+                                meme.addLike();
+                                likeAnimation(view, meme);
                             }
                         }
 
@@ -287,6 +294,36 @@ public class MemeListActivity extends BaseActivity {
                     });
         }
 
+        static void likeAnimation(View view, Meme meme) {
+
+            ViewGroup parent = (ViewGroup) view.getParent();
+            ImageView imageView = (ImageView) view;
+            TextSwitcher textSwitcher = parent.findViewById(R.id.likes);
+
+            final int duration = 300;
+            final int color = ContextCompat.getColor(view.getContext(), R.color.colorAccent);
+
+            ViewAnimator
+                    .animate(imageView)
+                    .rotation(360f)
+                    .duration(duration)
+                    .interpolator(new AccelerateDecelerateInterpolator())
+                    .thenAnimate(imageView)
+                    .scaleX(0.2f, 1f)
+                    .duration(duration)
+                    .interpolator(new OvershootInterpolator(4))
+                    .scaleY(0.2f, 1f)
+                    .duration(duration)
+                    .interpolator(new OvershootInterpolator(4))
+                    .onStart(() -> {
+                        imageView.setImageResource(R.drawable.ic_favorite);
+                        DrawableCompat.setTint(imageView.getDrawable(), color);
+                    })
+                    .start();
+
+            textSwitcher.setText(view.getContext().getString(R.string.meme_likes, meme.getLikes()));
+
+        }
     }
 
 }
