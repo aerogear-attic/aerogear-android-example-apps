@@ -1,5 +1,7 @@
 package org.aerogear.android.app.memeolist.model;
 
+import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
+
 import java.io.Serializable;
 
 /**
@@ -55,5 +57,9 @@ public class Comment implements Serializable {
 
     public void setMemeId(String memeId) {
         this.memeId = memeId;
+    }
+
+    public static Comment from(AllMemesQuery.Comment comment, String memeId) {
+        return new Comment(comment.id(), comment.owner(), comment.comment(), memeId);
     }
 }

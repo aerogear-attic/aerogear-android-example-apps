@@ -8,7 +8,7 @@
       "id": "sync",
       "name": "sync",
       "type": "sync",
-      "url": "http://10.32.241.221:8000/graphql",
+      "url": "http://192.168.0.12:8000/graphql",
       "config": {}
     },
     {

@@ -3,6 +3,9 @@ package org.aerogear.android.app.memeolist.model;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
+import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
+import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,13 +13,13 @@ import java.util.Objects;
 
 public class Meme extends BaseObservable implements Serializable {
 
-    private String id;
-    private String photoUrl;
-    private long likes;
-    private String owner;
-    private List<Comment> comments;
+    private final String id;
+    private final String photoUrl;
+    private final long likes;
+    private final UserProfile owner;
+    private final List<Comment> comments;
 
-    public Meme(String id, String photoUrl, String owner) {
+    public Meme(String id, String photoUrl, UserProfile owner) {
         this.id = id;
         this.photoUrl = photoUrl;
         this.owner = owner;
@@ -24,7 +27,7 @@ public class Meme extends BaseObservable implements Serializable {
         this.comments = new ArrayList<>();
     }
 
-    public Meme(String id, String photoUrl, String owner, long likes, List<Comment> comments) {
+    public Meme(String id, String photoUrl, long likes, UserProfile owner, List<Comment> comments) {
         this.id = id;
         this.photoUrl = photoUrl;
         this.owner = owner;
@@ -36,16 +39,8 @@ public class Meme extends BaseObservable implements Serializable {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getPhotoUrl() {
         return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
     }
 
     @Bindable
@@ -53,24 +48,12 @@ public class Meme extends BaseObservable implements Serializable {
         return likes;
     }
 
-    public void setLikes(long likes) {
-        this.likes = likes;
-    }
-
-    public String getOwner() {
+    public UserProfile getOwner() {
         return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
     }
 
     public List<Comment> getComments() {
         return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
     }
 
     @Override
@@ -86,4 +69,27 @@ public class Meme extends BaseObservable implements Serializable {
         return Objects.hash(id);
     }
 
+    public static Meme from(MemeAddedSubscription.MemeAdded meme) {
+        return new Meme(
+                meme.id(),
+                meme.photourl(),
+                UserProfile.from(meme.owner().get(0))
+        );
+    }
+
+    public static Meme from(AllMemesQuery.AllMeme meme) {
+
+        ArrayList<Comment> comments = new ArrayList<>();
+        for (AllMemesQuery.Comment comment : meme.comments()) {
+            comments.add(Comment.from(comment, meme.id()));
+        }
+
+        return new Meme(
+                meme.id(),
+                meme.photourl(),
+                meme.likes(),
+                UserProfile.from(meme.owner().get(0)),
+                comments);
+
+    }
 }

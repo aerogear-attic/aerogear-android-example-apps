@@ -34,6 +34,7 @@ import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Responder;
 import org.aerogear.mobile.sync.SyncClient;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -181,9 +182,8 @@ public class MemeListActivity extends BaseActivity {
                             }
                             displayError(R.string.error_subscribe_meme_creation);
                         } else {
-                            MemeAddedSubscription.MemeAdded node = response.data().memeAdded();
-                            Meme newMeme = new Meme(node.id(), node.photourl(), node.owner());
-                            memes.add(0, newMeme);
+                            MemeAddedSubscription.MemeAdded meme = response.data().memeAdded();
+                            memes.add(0, Meme.from(meme));
                             mMemes.smoothScrollToPosition(0);
                         }
                     }
@@ -214,25 +214,10 @@ public class MemeListActivity extends BaseActivity {
 
                             List<AllMemesQuery.AllMeme> allMemes = response.data().allMemes();
                             for (AllMemesQuery.AllMeme meme : allMemes) {
-                                List<AllMemesQuery.Comment> comments = meme.comments();
-                                ArrayList<Comment> commentsList = new ArrayList<>();
-                                for (AllMemesQuery.Comment comment : comments) {
-                                    Comment commentObj = new Comment(
-                                            comment.id(),
-                                            comment.owner(),
-                                            comment.comment(),
-                                            meme.id()
-                                    );
-                                    commentsList.add(commentObj);
-                                }
-                                Meme currentMeme = new Meme(meme.id(), meme.photourl(),
-                                        meme.owner(), meme.likes(), commentsList);
-                                currentMeme.setLikes(meme.likes());
-                                currentMeme.setOwner(meme.owner());
-                                memes.add(currentMeme);
-
-                                mSwipe.setRefreshing(false);
+                                memes.add(Meme.from(meme));
                             }
+
+                            mSwipe.setRefreshing(false);
                         }
                     }
 
@@ -245,8 +230,16 @@ public class MemeListActivity extends BaseActivity {
                 });
     }
 
+    @BindingAdapter("ownerAvatar")
+    public static void displayOwnerAvatar(@NotNull ImageView imageView, @NotNull Meme meme) {
+        Glide.with(imageView)
+                .load(meme.getOwner().getPictureUrl())
+                .apply(RequestOptions.circleCropTransform())
+                .into(imageView);
+    }
+
     @BindingAdapter("memeImage")
-    public static void displayMeme(ImageView imageView, Meme meme) {
+    public static void displayMeme(@NotNull ImageView imageView, @NotNull Meme meme) {
         CircularProgressDrawable placeHolder = new CircularProgressDrawable(imageView.getContext());
         placeHolder.setStrokeWidth(5f);
         placeHolder.setCenterRadius(30f);

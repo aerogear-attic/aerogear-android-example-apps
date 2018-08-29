@@ -35,14 +35,15 @@
                     android:layout_marginStart="@dimen/meme_avatar_margin_start"
                     android:src="@mipmap/ic_launcher"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:ownerAvatar="@{meme}" />
 
                 <TextView
                     android:id="@+id/user"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/meme_user_margin_start"
-                    android:text="@{meme.owner}"
+                    android:text="@{meme.owner.displayName}"
                     android:textColor="@color/colorAccent"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/avatar"
@@ -99,8 +100,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/meme_likes_margin_start"
-                    android:textColor="@color/colorAccent"
                     android:text="@{@string/meme_likes(meme.likes)}"
+                    android:textColor="@color/colorAccent"
                     app:layout_constraintBottom_toBottomOf="@id/likesIcon"
                     app:layout_constraintStart_toEndOf="@id/likesIcon"
                     app:layout_constraintTop_toTopOf="@id/likesIcon" />

@@ -159,8 +159,7 @@ public class MemeFormActivity extends BaseActivity {
 
     private void saveMeme(String imageUrl) {
         CreateMemeMutation mutation = CreateMemeMutation.builder()
-                .owner(userProfile.getDisplayName())
-                .ownerid(userProfile.getId())
+                .owner(userProfile.getId())
                 .photourl(createMemeUrl(imageUrl))
                 .build();
 
@@ -175,6 +174,7 @@ public class MemeFormActivity extends BaseActivity {
                             for (Error error : response.errors()) {
                                 MobileCore.getLogger().error(error.message());
                             }
+                            progress.dismiss();
                             displayError(R.string.meme_error_mutation);
                         } else {
                             progress.dismiss();
