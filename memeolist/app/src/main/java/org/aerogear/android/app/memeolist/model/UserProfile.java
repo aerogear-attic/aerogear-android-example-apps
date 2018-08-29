@@ -11,10 +11,10 @@ import java.util.List;
  */
 public class UserProfile implements Serializable {
 
-    private String id;
-    private String displayName;
-    private String email;
-    private String pictureUrl;
+    private final String id;
+    private final String displayName;
+    private final String email;
+    private final String pictureUrl;
 
     public UserProfile(UserPrincipal loggedUser) {
         this.id = "1";
