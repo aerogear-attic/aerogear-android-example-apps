@@ -34,6 +34,7 @@ import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Responder;
 import org.aerogear.mobile.sync.SyncClient;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -230,7 +231,7 @@ public class MemeListActivity extends BaseActivity {
     }
 
     @BindingAdapter("ownerAvatar")
-    public static void displayOwnerAvatar(ImageView imageView, Meme meme) {
+    public static void displayOwnerAvatar(@NotNull ImageView imageView, @NotNull Meme meme) {
         Glide.with(imageView)
                 .load(meme.getOwner().getPictureUrl())
                 .apply(RequestOptions.circleCropTransform())
@@ -238,7 +239,7 @@ public class MemeListActivity extends BaseActivity {
     }
 
     @BindingAdapter("memeImage")
-    public static void displayMeme(ImageView imageView, Meme meme) {
+    public static void displayMeme(@NotNull ImageView imageView, @NotNull Meme meme) {
         CircularProgressDrawable placeHolder = new CircularProgressDrawable(imageView.getContext());
         placeHolder.setStrokeWidth(5f);
         placeHolder.setCenterRadius(30f);

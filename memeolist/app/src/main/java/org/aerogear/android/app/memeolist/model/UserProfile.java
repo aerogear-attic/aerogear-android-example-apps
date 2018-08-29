@@ -3,6 +3,7 @@ package org.aerogear.android.app.memeolist.model;
 import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
 import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
 import org.aerogear.mobile.auth.user.UserPrincipal;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.List;
@@ -46,11 +47,11 @@ public class UserProfile implements Serializable {
         return pictureUrl;
     }
 
-    public static UserProfile from(MemeAddedSubscription.Owner user) {
+    public static UserProfile from(@NotNull MemeAddedSubscription.Owner user) {
         return new UserProfile(user.id(), user.displayname(), user.email(), user.pictureurl());
     }
 
-    public static UserProfile from(AllMemesQuery.Owner user) {
+    public static UserProfile from(@NotNull AllMemesQuery.Owner user) {
         return new UserProfile(user.id(), user.displayname(), user.email(), user.pictureurl());
     }
 
