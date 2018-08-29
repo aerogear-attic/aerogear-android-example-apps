@@ -3,6 +3,7 @@ package org.aerogear.android.app.memeolist.model;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
+import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
 import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
 
@@ -15,7 +16,7 @@ public class Meme extends BaseObservable implements Serializable {
 
     private final String id;
     private final String photoUrl;
-    private final long likes;
+    private long likes;
     private final UserProfile owner;
     private final List<Comment> comments;
 
@@ -46,6 +47,11 @@ public class Meme extends BaseObservable implements Serializable {
     @Bindable
     public long getLikes() {
         return likes;
+    }
+
+    public void setLikes(long likes) {
+        this.likes = likes;
+        notifyPropertyChanged(BR.likes);
     }
 
     public UserProfile getOwner() {
@@ -92,4 +98,5 @@ public class Meme extends BaseObservable implements Serializable {
                 comments);
 
     }
+
 }
