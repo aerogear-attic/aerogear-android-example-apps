@@ -28,6 +28,7 @@
     <string name="error_login">Error while trying to login</string>
     <string name="error_logout">Error while trying to logout</string>
     <string name="error_retrieve_memes">Error while trying to retrieve memes</string>
+    <string name="error_retrieve_comments">Error while trying to retrieve comments</string>
     <string name="error_subscribe_meme_creation">Error while trying to subscribe meme creation</string>
 </resources>
 

@@ -13,12 +13,17 @@ import com.github.nitrico.lastadapter.LastAdapter;
 
 import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.R;
+import org.aerogear.android.app.memeolist.graphql.CommentsQuery;
 import org.aerogear.android.app.memeolist.graphql.PostCommentMutation;
 import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.mobile.core.MobileCore;
 import org.aerogear.mobile.core.reactive.Responder;
 import org.aerogear.mobile.sync.SyncClient;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,13 +32,16 @@ import butterknife.OnClick;
 public class CommentsFormActivity extends BaseActivity {
 
     @BindView(R.id.comment_text)
-    TextView commentText;
+    TextView mComment;
 
     @BindView(R.id.comments_list)
-    RecyclerView commentList;
+    RecyclerView mComments;
 
-    private ObservableList<Comment> comments = new ObservableArrayList<>();
+    @BindView(R.id.new_comment)
+    TextView mAddComment;
+
     private Meme meme;
+    private ObservableList<Comment> comments = new ObservableArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +50,51 @@ public class CommentsFormActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        commentList.setLayoutManager(new LinearLayoutManager(this));
-        commentList.setHasFixedSize(true);
+        meme = (Meme) getIntent().getSerializableExtra(Meme.class.getName());
+
+        mComments.setLayoutManager(new LinearLayoutManager(this));
+        mComments.setHasFixedSize(true);
 
         new LastAdapter(comments, BR.comment)
                 .map(Comment.class, R.layout.item_comment)
-                .into(commentList);
+                .into(mComments);
+    }
 
-        meme = (Meme) getIntent().getSerializableExtra(Meme.class.getName());
-        comments.addAll(meme.getComments());
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        SyncClient
+                .getInstance()
+                .query(CommentsQuery.builder().memeid(meme.getId()).build())
+                .execute(CommentsQuery.Data.class)
+                .respondWith(new Responder<Response<CommentsQuery.Data>>() {
+                    @Override
+                    public void onResult(Response<CommentsQuery.Data> response) {
+                        if (response.hasErrors()) {
+                            for (Error error : response.errors()) {
+                                MobileCore.getLogger().error(error.message());
+                            }
+                            displayError(R.string.error_retrieve_comments);
+                        } else {
+                            // FIXME: Server order is broke
+                            List<CommentsQuery.Comment> c = response.data().comments();
+                            List<Comment> responseComments = new ArrayList<>();
+                            for (CommentsQuery.Comment comment : c) {
+                                responseComments.add(Comment.from(comment));
+                            }
+                            Collections.sort(responseComments, (comment1, comment2) ->
+                                    comment2.getId().compareTo(comment1.getId()));
+                            comments.addAll(responseComments);
+                        }
+                    }
+
+                    @Override
+                    public void onException(Exception exception) {
+                        MobileCore.getLogger().error(exception.getMessage(), exception);
+                        displayError(R.string.error_retrieve_comments);
+                    }
+                });
     }
 
     @OnClick(R.id.back)
@@ -60,16 +104,12 @@ public class CommentsFormActivity extends BaseActivity {
 
     @OnClick(R.id.new_comment)
     void newComment() {
-        Comment comment = new Comment(
-                userProfile.getDisplayName(),
-                commentText.getText().toString(),
-                meme.getId()
-        );
+        mAddComment.setEnabled(false);
 
-        PostCommentMutation postCommentMutation = PostCommentMutation.builder().
-                comment(comment.getComment()).
-                owner(comment.getOwner()).
-                memeid(comment.getMemeId())
+        PostCommentMutation postCommentMutation = PostCommentMutation.builder()
+                .comment(mComment.getText().toString())
+                .owner(userProfile.getId())
+                .memeid(meme.getId())
                 .build();
 
         SyncClient
@@ -85,16 +125,18 @@ public class CommentsFormActivity extends BaseActivity {
                             }
                             displayError(R.string.comment_create_error);
                         } else {
-                            PostCommentMutation.PostComment postComment = response.data().postComment();
-                            comment.setId(postComment.id());
-                            comments.add(comment);
+                            mComment.setText("");
+                            comments.add(0, Comment.from(response.data().postComment()));
+                            mComments.smoothScrollToPosition(0);
                         }
+                        mAddComment.setEnabled(true);
                     }
 
                     @Override
                     public void onException(Exception exception) {
                         MobileCore.getLogger().error(exception.getMessage(), exception);
                         displayError(R.string.comment_create_error);
+                        mAddComment.setEnabled(true);
                     }
                 });
     }

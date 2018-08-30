@@ -8,8 +8,6 @@ import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
 import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Meme extends BaseObservable implements Serializable {
@@ -18,22 +16,19 @@ public class Meme extends BaseObservable implements Serializable {
     private final String photoUrl;
     private long likes;
     private final UserProfile owner;
-    private final List<Comment> comments;
 
     public Meme(String id, String photoUrl, UserProfile owner) {
         this.id = id;
         this.photoUrl = photoUrl;
         this.owner = owner;
         this.likes = 0;
-        this.comments = new ArrayList<>();
     }
 
-    public Meme(String id, String photoUrl, long likes, UserProfile owner, List<Comment> comments) {
+    public Meme(String id, String photoUrl, long likes, UserProfile owner) {
         this.id = id;
         this.photoUrl = photoUrl;
         this.owner = owner;
         this.likes = likes;
-        this.comments = comments;
     }
 
     public String getId() {
@@ -56,10 +51,6 @@ public class Meme extends BaseObservable implements Serializable {
 
     public UserProfile getOwner() {
         return owner;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
     }
 
     @Override
@@ -85,17 +76,11 @@ public class Meme extends BaseObservable implements Serializable {
 
     public static Meme from(AllMemesQuery.AllMeme meme) {
 
-        ArrayList<Comment> comments = new ArrayList<>();
-        for (AllMemesQuery.Comment comment : meme.comments()) {
-            comments.add(Comment.from(comment, meme.id()));
-        }
-
         return new Meme(
                 meme.id(),
                 meme.photourl(),
                 meme.likes(),
-                UserProfile.from(meme.owner().get(0)),
-                comments);
+                UserProfile.from(meme.owner().get(0)));
 
     }
 

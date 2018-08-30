@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/comments_comment_owner_margin"
             android:layout_marginTop="@dimen/comments_comment_owner_margin"
-            android:text="@{comment.owner}"
+            android:text="@{comment.owner.displayName}"
             android:textColor="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
