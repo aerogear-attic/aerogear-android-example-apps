@@ -70,7 +70,7 @@ public class Meme extends BaseObservable implements Serializable {
         return new Meme(
                 meme.id(),
                 meme.photourl(),
-                UserProfile.from(meme.owner().get(0))
+                UserProfile.from(meme.owner())
         );
     }
 
@@ -80,7 +80,7 @@ public class Meme extends BaseObservable implements Serializable {
                 meme.id(),
                 meme.photourl(),
                 meme.likes(),
-                UserProfile.from(meme.owner().get(0)));
+                UserProfile.from(meme.owner()));
 
     }
 

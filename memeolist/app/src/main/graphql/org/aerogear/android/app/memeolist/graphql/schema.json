@@ -288,17 +288,9 @@
                 "kind": "NON_NULL",
                 "name": null,
                 "ofType": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "OBJECT",
-                      "name": "Profile",
-                      "ofType": null
-                    }
-                  }
+                  "kind": "OBJECT",
+                  "name": "Profile",
+                  "ofType": null
                 }
               },
               "isDeprecated": false,
@@ -1544,9 +1536,9 @@
   "extensions": {
     "tracing": {
       "version": 1,
-      "startTime": "2018-08-30T13:25:30.759Z",
-      "endTime": "2018-08-30T13:25:30.773Z",
-      "duration": 14093746,
+      "startTime": "2018-08-30T17:19:12.642Z",
+      "endTime": "2018-08-30T17:19:12.656Z",
+      "duration": 13762283,
       "execution": {
         "resolvers": []
       }
