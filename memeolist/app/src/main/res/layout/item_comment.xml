@@ -14,20 +14,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/comments_avatar_width"
+            android:layout_height="@dimen/comments_avatar_width"
+            app:avatar="@{comment.owner}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/avatars" />
+
         <TextView
-            android:id="@+id/comment_item"
+            android:id="@+id/comment"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/comments_margin"
             android:background="@color/gray"
             android:padding="@dimen/comments_comment_item_padding"
             android:text="@{comment.comment}"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/avatar"
+            app:layout_constraintTop_toTopOf="@+id/avatar"
             tools:text="This app is awesome!" />
 
         <TextView
-            android:id="@+id/comment_owner"
+            android:id="@+id/owner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/comments_comment_owner_margin"
@@ -36,7 +46,7 @@
             android:textColor="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/comment_item"
+            app:layout_constraintTop_toBottomOf="@+id/comment"
             tools:text="AeroGear" />
 
     </android.support.constraint.ConstraintLayout>

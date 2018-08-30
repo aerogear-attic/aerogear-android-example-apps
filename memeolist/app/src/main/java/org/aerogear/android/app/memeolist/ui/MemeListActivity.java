@@ -230,14 +230,6 @@ public class MemeListActivity extends BaseActivity {
                 });
     }
 
-    @BindingAdapter("ownerAvatar")
-    public static void displayOwnerAvatar(@NotNull ImageView imageView, @NotNull Meme meme) {
-        Glide.with(imageView)
-                .load(meme.getOwner().getPictureUrl())
-                .apply(RequestOptions.circleCropTransform())
-                .into(imageView);
-    }
-
     @BindingAdapter("memeImage")
     public static void displayMeme(@NotNull ImageView imageView, @NotNull Meme meme) {
         CircularProgressDrawable placeHolder = new CircularProgressDrawable(imageView.getContext());

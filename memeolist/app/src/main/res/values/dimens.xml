@@ -43,5 +43,6 @@
     <dimen name="comments_comment_list_margin_top">10dp</dimen>
     <dimen name="comments_comment_item_padding">10dp</dimen>
     <dimen name="comments_comment_owner_margin">10dp</dimen>
+    <dimen name="comments_avatar_width">40dp</dimen>
 
 </resources>

@@ -16,7 +16,7 @@
     <string name="meme_created">Meme created</string>
     <string name="meme_liked">Meme liked!</string>
     <string name="failed_to_like">Failed to like meme!</string>
-    <string name="add_comment">Add Comment</string>
+    <string name="add_comment">Post</string>
     <string name="comments">Comments</string>
     <string name="comment_create_error">Cannot create comment</string>
     <string name="profile_cannot_fetch">Cannot fetch profile</string>
@@ -30,5 +30,6 @@
     <string name="error_retrieve_memes">Error while trying to retrieve memes</string>
     <string name="error_retrieve_comments">Error while trying to retrieve comments</string>
     <string name="error_subscribe_meme_creation">Error while trying to subscribe meme creation</string>
+    <string name="comments_comment_hint">Type your comment here</string>
 </resources>
 

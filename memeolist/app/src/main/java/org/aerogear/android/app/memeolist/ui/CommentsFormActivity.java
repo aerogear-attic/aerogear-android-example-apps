@@ -5,6 +5,7 @@ import android.databinding.ObservableList;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.apollographql.apollo.api.Error;
@@ -31,14 +32,17 @@ import butterknife.OnClick;
 
 public class CommentsFormActivity extends BaseActivity {
 
-    @BindView(R.id.comment_text)
+    @BindView(R.id.comment)
     TextView mComment;
 
-    @BindView(R.id.comments_list)
+    @BindView(R.id.comments)
     RecyclerView mComments;
 
-    @BindView(R.id.new_comment)
-    TextView mAddComment;
+    @BindView(R.id.post)
+    TextView mPost;
+
+    @BindView(R.id.avatar)
+    ImageView mAvatar;
 
     private Meme meme;
     private ObservableList<Comment> comments = new ObservableArrayList<>();
@@ -52,17 +56,14 @@ public class CommentsFormActivity extends BaseActivity {
 
         meme = (Meme) getIntent().getSerializableExtra(Meme.class.getName());
 
+        displayAvatar(mAvatar, userProfile);
+
         mComments.setLayoutManager(new LinearLayoutManager(this));
         mComments.setHasFixedSize(true);
 
         new LastAdapter(comments, BR.comment)
                 .map(Comment.class, R.layout.item_comment)
                 .into(mComments);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
 
         SyncClient
                 .getInstance()
@@ -95,6 +96,7 @@ public class CommentsFormActivity extends BaseActivity {
                         displayError(R.string.error_retrieve_comments);
                     }
                 });
+
     }
 
     @OnClick(R.id.back)
@@ -102,9 +104,9 @@ public class CommentsFormActivity extends BaseActivity {
         finish();
     }
 
-    @OnClick(R.id.new_comment)
+    @OnClick(R.id.post)
     void newComment() {
-        mAddComment.setEnabled(false);
+        mPost.setEnabled(false);
 
         PostCommentMutation postCommentMutation = PostCommentMutation.builder()
                 .comment(mComment.getText().toString())
@@ -129,14 +131,14 @@ public class CommentsFormActivity extends BaseActivity {
                             comments.add(0, Comment.from(response.data().postComment()));
                             mComments.smoothScrollToPosition(0);
                         }
-                        mAddComment.setEnabled(true);
+                        mPost.setEnabled(true);
                     }
 
                     @Override
                     public void onException(Exception exception) {
                         MobileCore.getLogger().error(exception.getMessage(), exception);
                         displayError(R.string.comment_create_error);
-                        mAddComment.setEnabled(true);
+                        mPost.setEnabled(true);
                     }
                 });
     }
