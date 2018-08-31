@@ -201,6 +201,7 @@ public class MemeListActivity extends BaseActivity {
                 .getInstance()
                 .query(new AllMemesQuery())
                 .execute(AllMemesQuery.Data.class)
+                .respondOn(new AppExecutors().mainThread())
                 .respondWith(new Responder<Response<AllMemesQuery.Data>>() {
                     @Override
                     public void onResult(Response<AllMemesQuery.Data> response) {
