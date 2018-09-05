@@ -23,4 +23,4 @@ To create a meme the app will upload the selected image from the app to [imgur.c
 |:---------:|:-----------:|:--------------------------:|
 | [2.1.0-alpha.1](https://github.com/aerogear/aerogear-android-example-apps/releases/tag/2.1.0-alpha.1) | [2.1.0-alpha.1](https://github.com/aerogear/aerogear-android-sdk/releases/tag/2.1.0-alpha.1) | [0.1.0-alpha](https://github.com/aerogear/data-sync-server/releases/tag/0.1.0-alpha) |
 
-:point_right: If you are brave and wanna live in the edge you can try it from the master branch, but you will need to build the [AeroGear Android SDK](https://github.com/aerogear/aerogear-android-sdk) snapshot dependency yourself, but keep in mind master branch is unstable so use it at your own risk.
+:point_right: master branch contains development changes that may not work with the released server. If you wanna play with the master branch you will need to build the [AeroGear Android SDK](https://github.com/aerogear/aerogear-android-sdk) snapshot dependency yourself. Please use master only if you are contributing to the application.
