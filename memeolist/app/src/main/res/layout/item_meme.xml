@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -34,9 +35,10 @@
                     android:layout_height="@dimen/meme_avatar_width"
                     android:layout_marginStart="@dimen/meme_avatar_margin_start"
                     android:src="@mipmap/ic_launcher"
+                    app:avatar="@{meme.owner}"
+                    tools:src="@tools:sample/avatars"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:avatar="@{meme.owner}" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/user"
@@ -46,30 +48,9 @@
                     android:text="@{meme.owner.displayName}"
                     android:textColor="@color/colorAccent"
                     android:textStyle="bold"
+                    tools:text="@tools:sample/full_names"
                     app:layout_constraintBottom_toBottomOf="@id/avatar"
                     app:layout_constraintStart_toEndOf="@id/avatar"
-                    app:layout_constraintTop_toTopOf="@id/avatar" />
-
-                <ImageView
-                    android:id="@+id/createdAtIcon"
-                    android:layout_width="@dimen/meme_created_at_icon_width"
-                    android:layout_height="@dimen/meme_created_at_icon_width"
-                    android:layout_marginEnd="@dimen/meme_created_at_icon_margin_end"
-                    android:src="@drawable/ic_access_time"
-                    android:tint="@color/gray"
-                    app:layout_constraintBottom_toBottomOf="@id/createdAt"
-                    app:layout_constraintEnd_toStartOf="@id/createdAt"
-                    app:layout_constraintTop_toTopOf="@id/createdAt" />
-
-                <TextView
-                    android:id="@+id/createdAt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/meme_avatar_margin_start"
-                    android:text="14h"
-                    android:textColor="@color/gray"
-                    app:layout_constraintBottom_toBottomOf="@id/avatar"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/avatar" />
 
                 <ImageView
@@ -79,6 +60,7 @@
                     android:layout_marginTop="@dimen/meme_image_margin_top"
                     android:scaleType="centerCrop"
                     android:src="@mipmap/ic_launcher"
+                    tools:src="@tools:sample/backgrounds/scenic"
                     app:layout_constraintDimensionRatio="H,1:1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -99,12 +81,13 @@
                     android:id="@+id/likes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/meme_likes_margin_start"
+                    android:layout_marginStart="8dp"
                     android:text="@{@string/meme_likes(meme.likes)}"
                     android:textColor="@color/colorAccent"
-                    app:layout_constraintBottom_toBottomOf="@id/likesIcon"
-                    app:layout_constraintStart_toEndOf="@id/likesIcon"
-                    app:layout_constraintTop_toTopOf="@id/likesIcon" />
+                    app:layout_constraintBottom_toBottomOf="@+id/likesIcon"
+                    app:layout_constraintStart_toEndOf="@+id/likesIcon"
+                    app:layout_constraintTop_toTopOf="@+id/likesIcon"
+                    tools:text="182,465 likes" />
 
                 <ImageView
                     android:id="@+id/like"
@@ -125,9 +108,9 @@
                     android:onClick="@{(v) -> MemeHandler.newComment(v, meme)}"
                     android:src="@drawable/ic_chat_bubble_outline"
                     android:tint="@color/gray"
-                    app:layout_constraintBottom_toBottomOf="@id/likesIcon"
+                    app:layout_constraintBottom_toBottomOf="@+id/likesIcon"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/likesIcon" />
+                    app:layout_constraintTop_toTopOf="@+id/likesIcon" />
 
             </android.support.constraint.ConstraintLayout>
 
