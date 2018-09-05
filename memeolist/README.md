@@ -1,11 +1,26 @@
 # Memeolist
 
-An example Android app for [AeroGear Sync](https://aerogear.org/sync/). Memeolist is a social media app for the AeroGear community where they can share funny images (memes) with each other. 
+Memeolist is an example app to show how to integrate an Android app with [AeroGear Data Sync](https://github.com/aerogear/data-sync-server) using the [AeroGear Android SDK](https://github.com/aerogear/aerogear-android-sdk). 
 
-## Backend
+## How to run it
 
-Memolist requires [AeroGear Sync Server](https://github.com/aerogear/data-sync-server) to be running. Please follow [instructions to run server](https://github.com/aerogear/data-sync-server#memeolist---postgres). See also example queries [Memeolist Graphql queries](https://github.com/aerogear/data-sync-server/blob/master/examples/memeolist.query.graphql)
+1. Make sure you have a [AeroGear Data Sync Server](https://github.com/aerogear/data-sync-server) instance up and running
+2. Update the sync url in `app/src/main/assets/mobile-services.json`
 
-## Configuring mobile application
+## How it works
 
-Memeolist is configured in `assets/mobile-services.json`. Please review server url before building application
+### User/Profile
+
+The login feature is provided by [Keycloak](https://www.keycloak.org/). After you login/create your user the app will create a profile in the [AeroGear Data Sync Server](https://github.com/aerogear/data-sync-server) based in your [Keycloak](https://www.keycloak.org/) profile.
+
+### Meme
+
+To create a meme the app will upload the selected image from the app to [imgur.com](http://imgur.com), generate a meme (and a public link) using [memegen](https://memegen.link) and store it on the [AeroGear Data Sync Server](https://github.com/aerogear/data-sync-server).
+
+## Version matrix
+
+| memeolist | Android SDK | AeroGear Data Sync Server  |
+|:---------:|:-----------:|:--------------------------:|
+| [2.1.0-alpha.1](https://github.com/aerogear/aerogear-android-example-apps/releases/tag/2.1.0-alpha.1) | [2.1.0-alpha.1](https://github.com/aerogear/aerogear-android-sdk/releases/tag/2.1.0-alpha.1) | [0.1.0-alpha](https://github.com/aerogear/data-sync-server/releases/tag/0.1.0-alpha) |
+
+:point_right: If you are brave and wanna live in the edge you can try it from the master branch, but you will need to build the [AeroGear Android SDK](https://github.com/aerogear/aerogear-android-sdk) snapshot dependency yourself, but keep in mind master branch is unstable so use it at your own risk.
