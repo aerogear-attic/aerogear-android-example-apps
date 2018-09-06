@@ -16,7 +16,7 @@ The applications contains an interactive version of the code samples found in th
 
 | App                                      | Auth               | Security           | Push                | Sync               |
 |------------------------------------------|:------------------:|:------------------:|:-------------------:|:------------------:|
-| [MemeOList](memeolist)                   | :heavy_minus_sign: | :heavy_minus_sign: | :heavy_minus_sign: |  :heavy_check_mark: |
+| [MemeOList](memeolist)                   | :heavy_minus_sign: | :heavy_check_mark: | :heavy_minus_sign: |  :heavy_check_mark: |
 
 ## License 
 
