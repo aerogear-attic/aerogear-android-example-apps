@@ -52,7 +52,7 @@ public class MemeFormActivity extends BaseActivity {
 
     private MaterialDialog progress;
     private File file;
-    private boolean useFixedMeme = true;
+    private boolean useFixedMeme = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
