@@ -1,6 +1,7 @@
 package org.aerogear.android.app.memeolist.model;
 
-import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
+import org.aerogear.android.app.memeolist.graphql.CommentsQuery;
+import org.aerogear.android.app.memeolist.graphql.PostCommentMutation;
 
 import java.io.Serializable;
 
@@ -9,57 +10,49 @@ import java.io.Serializable;
  */
 public class Comment implements Serializable {
 
-    private String id;
-    private String comment;
-    private String owner;
-    private String memeId;
+    private final String id;
+    private final String comment;
+    private final UserProfile owner;
 
-    public Comment(String owner, String comment, String memeId) {
-        this.owner = owner;
-        this.comment = comment;
-        this.memeId = memeId;
-    }
-
-    public Comment(String id, String owner, String comment, String memeId) {
+    public Comment(String id, String comment, UserProfile owner) {
         this.id = id;
-        this.owner = owner;
         this.comment = comment;
-        this.memeId = memeId;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
         this.owner = owner;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getComment() {
+        return comment;
     }
 
-    public String getMemeId() {
-        return memeId;
+    public UserProfile getOwner() {
+        return owner;
     }
 
-    public void setMemeId(String memeId) {
-        this.memeId = memeId;
+    public static Comment from(CommentsQuery.Comment comment) {
+        UserProfile owner = new UserProfile(
+                comment.owner().id(),
+                comment.owner().displayname(),
+                comment.owner().email(),
+                comment.owner().pictureurl()
+        );
+
+        return new Comment(comment.id(), comment.comment(), owner);
     }
 
-    public static Comment from(AllMemesQuery.Comment comment, String memeId) {
-        return new Comment(comment.id(), comment.owner(), comment.comment(), memeId);
+    public static Comment from(PostCommentMutation.PostComment comment) {
+        UserProfile owner = new UserProfile(
+                comment.owner().id(),
+                comment.owner().displayname(),
+                comment.owner().email(),
+                comment.owner().pictureurl()
+        );
+
+        return new Comment(comment.id(), comment.comment(), owner);
     }
+
+
 }

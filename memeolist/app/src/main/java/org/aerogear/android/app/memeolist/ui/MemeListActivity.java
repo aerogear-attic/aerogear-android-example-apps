@@ -21,22 +21,17 @@ import com.github.nitrico.lastadapter.LastAdapter;
 import org.aerogear.android.app.memeolist.BR;
 import org.aerogear.android.app.memeolist.R;
 import org.aerogear.android.app.memeolist.graphql.AllMemesQuery;
-import org.aerogear.android.app.memeolist.graphql.CreateProfileMutation;
 import org.aerogear.android.app.memeolist.graphql.LikeMemeMutation;
 import org.aerogear.android.app.memeolist.graphql.MemeAddedSubscription;
-import org.aerogear.android.app.memeolist.graphql.ProfileQuery;
-import org.aerogear.android.app.memeolist.model.Comment;
 import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
 import org.aerogear.mobile.auth.user.UserPrincipal;
 import org.aerogear.mobile.core.Callback;
 import org.aerogear.mobile.core.MobileCore;
-import org.aerogear.mobile.core.executor.AppExecutors;
 import org.aerogear.mobile.core.reactive.Responder;
 import org.aerogear.mobile.sync.SyncClient;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -60,26 +55,17 @@ public class MemeListActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        if (!application.isLogged()) {
-            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-            finish();
-        } else {
+        mMemes.setLayoutManager(new LinearLayoutManager(this));
+        mMemes.setHasFixedSize(true);
 
-            mMemes.setLayoutManager(new LinearLayoutManager(this));
-            mMemes.setHasFixedSize(true);
+        new LastAdapter(memes, BR.meme)
+                .map(Meme.class, R.layout.item_meme)
+                .into(mMemes);
 
-            new LastAdapter(memes, BR.meme)
-                    .map(Meme.class, R.layout.item_meme)
-                    .into(mMemes);
+        mSwipe.setOnRefreshListener(this::retrieveMemes);
 
-            mSwipe.setOnRefreshListener(this::retrieveMemes);
-
-            createOrRetrieveProfile();
-
-            subscribeMemes();
-            retrieveMemes();
-
-        }
+        subscribeMemes();
+        retrieveMemes();
     }
 
     @OnClick(R.id.exit)
@@ -102,70 +88,6 @@ public class MemeListActivity extends BaseActivity {
     @OnClick(R.id.newMeme)
     void newMeme() {
         startActivity(new Intent(getApplicationContext(), MemeFormActivity.class));
-    }
-
-    public void createOrRetrieveProfile() {
-        SyncClient
-                .getInstance()
-                .query(ProfileQuery.builder().email(userProfile.getEmail()).build())
-                .execute(ProfileQuery.Data.class)
-                .respondWith(new Responder<Response<ProfileQuery.Data>>() {
-                    @Override
-                    public void onResult(Response<ProfileQuery.Data> response) {
-                        if (response.hasErrors()) {
-                            for (Error error : response.errors()) {
-                                MobileCore.getLogger().error(error.message());
-                            }
-                            displayError(R.string.profile_cannot_fetch);
-                        } else {
-                            ProfileQuery.Data data = response.data();
-                            if (data != null) {
-                                List<ProfileQuery.Profile> profile = data.profile();
-                                if (profile.isEmpty()) {
-                                    createProfile();
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onException(Exception exception) {
-                        MobileCore.getLogger().error(exception.getMessage(), exception);
-                        displayError(R.string.profile_cannot_fetch);
-                    }
-                });
-    }
-
-    private void createProfile() {
-        CreateProfileMutation createProfileMutation = CreateProfileMutation.builder()
-                .displayname(userProfile.getDisplayName())
-                .email(userProfile.getEmail())
-                .pictureurl(userProfile.getPictureUrl())
-                .build();
-
-        SyncClient
-                .getInstance()
-                .mutation(createProfileMutation)
-                .execute(CreateProfileMutation.Data.class)
-                .respondWith(new Responder<Response<CreateProfileMutation.Data>>() {
-                    @Override
-                    public void onResult(Response<CreateProfileMutation.Data> response) {
-                        if (response.hasErrors()) {
-                            for (Error error : response.errors()) {
-                                MobileCore.getLogger().error(error.message());
-                            }
-                            displayError(R.string.profile_create_fail);
-                        } else {
-                            MobileCore.getLogger().info(getString(R.string.profile_created));
-                        }
-                    }
-
-                    @Override
-                    public void onException(Exception exception) {
-                        MobileCore.getLogger().error(exception.getMessage(), exception);
-                        displayError(R.string.profile_create_fail);
-                    }
-                });
     }
 
     private void subscribeMemes() {
@@ -228,14 +150,6 @@ public class MemeListActivity extends BaseActivity {
                         mSwipe.setRefreshing(false);
                     }
                 });
-    }
-
-    @BindingAdapter("ownerAvatar")
-    public static void displayOwnerAvatar(@NotNull ImageView imageView, @NotNull Meme meme) {
-        Glide.with(imageView)
-                .load(meme.getOwner().getPictureUrl())
-                .apply(RequestOptions.circleCropTransform())
-                .into(imageView);
     }
 
     @BindingAdapter("memeImage")

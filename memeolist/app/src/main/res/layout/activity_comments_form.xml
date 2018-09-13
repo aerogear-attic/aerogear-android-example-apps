@@ -19,16 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                style="@style/AppTheme.Toolbar.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/back"
                 style="@style/AppTheme.Toolbar.Icon"
@@ -37,52 +27,65 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back" />
 
+            <TextView
+                style="@style/AppTheme.Toolbar.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/toolbar_icon_size"
+                android:text="@string/comments"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/back"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.Toolbar>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/comments"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/comments_margin"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="148dp"
+        app:layout_constraintBottom_toTopOf="@+id/avatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:listitem="@layout/item_comment" />
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/comments_avatar_width"
+        android:layout_height="@dimen/comments_avatar_width"
+        android:layout_marginBottom="@dimen/comments_margin"
+        android:layout_marginStart="@dimen/comments_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:src="@tools:sample/avatars" />
+
     <EditText
-        android:id="@+id/comment_text"
+        android:id="@+id/comment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/comments_margin"
         android:layout_marginStart="@dimen/comments_margin"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toStartOf="@id/new_comment"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        android:maxLength="500"
+        android:maxLines="1"
+        android:hint="@string/comments_comment_hint"
+        app:layout_constraintBottom_toBottomOf="@+id/avatar"
+        app:layout_constraintEnd_toStartOf="@+id/post"
+        app:layout_constraintStart_toEndOf="@+id/avatar"
+        app:layout_constraintTop_toTopOf="@+id/avatar" />
 
     <TextView
-        android:id="@+id/new_comment"
+        android:id="@+id/post"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/comments_margin"
         android:text="@string/add_comment"
-        app:layout_constraintBottom_toBottomOf="@id/comment_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/comment_text"
-        app:layout_constraintTop_toTopOf="@id/comment_text" />
-
-    <TextView
-        android:id="@+id/comments_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/comments_margin"
-        android:layout_marginTop="@dimen/comments_comments_title_margin_top"
-        android:text="@string/comments"
-        android:textSize="@dimen/comments_comments_title_text_size"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/comment_text" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/comments_list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="@dimen/comments_margin"
-        android:layout_marginTop="@dimen/comments_comment_list_margin_top"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/comments_title"
-        tools:listitem="@layout/item_comment" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/comment"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

@@ -1,13 +1,20 @@
 package org.aerogear.android.app.memeolist.ui;
 
+import android.databinding.BindingAdapter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
+import org.aerogear.android.app.memeolist.model.Meme;
 import org.aerogear.android.app.memeolist.model.UserProfile;
 import org.aerogear.android.app.memeolist.util.MessageHelper;
 import org.aerogear.mobile.auth.AuthService;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -41,6 +48,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void displayMessage(String message) {
         messageHelper.displayMessage(message);
+    }
+
+    @BindingAdapter("avatar")
+    public static void displayAvatar(@NotNull ImageView imageView, @NotNull UserProfile owner) {
+        Glide.with(imageView)
+                .load(owner.getPictureUrl())
+                .apply(RequestOptions.circleCropTransform())
+                .into(imageView);
     }
 
 }

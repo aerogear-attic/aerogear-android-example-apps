@@ -23,10 +23,10 @@ public class MemeolistApplication extends Application {
 
         authService = new AuthService(authServiceConfig);
 
-        if (authService.currentUser() != null) {
-            userProfile = new UserProfile(authService.currentUser());
-        }
-        MobileCore.getInstance().getHttpLayer().requestHeaderInterceptor().add(authService.getAuthHeaderProvider());
+        MobileCore.getInstance()
+                .getHttpLayer()
+                .requestHeaderInterceptor()
+                .add(authService.getAuthHeaderProvider());
     }
 
     public boolean isLogged() {
